@@ -1,4 +1,4 @@
-# ![Webtop 4 Logo](assets/logo.png) Webtop 4
+# ![Webtop 4 Logo](assets/icon.png) Webtop 4
 
 [![Version](https://img.shields.io/badge/version-4.0-blue)](https://github.com/Quicksilver-Division/Webtop-4) 
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE) 
