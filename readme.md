@@ -1,4 +1,8 @@
-# ![Webtop 4 Logo](assets/icon.png) Webtop 4
+<p align="center">
+  <img src="assets/logo.png" alt="Webtop 4 Logo" width="150"/>
+</p>
+
+<h1 align="center">Webtop 4</h1>
 
 [![Version](https://img.shields.io/badge/version-4.0-blue)](https://github.com/Quicksilver-Division/Webtop-4) 
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE) 
