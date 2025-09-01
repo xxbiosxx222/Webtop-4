@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="Webtop 4 Logo" width="150"/>
+  <img src="assets/icon.png" alt="Webtop 4 Logo" width="150"/>
 </p>
 
 <h1 align="center">Webtop 4</h1>
