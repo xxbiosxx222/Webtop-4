@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>DOOM</title>
+
+  <script src="nexus8.js"></script>
+  <jstyle>
+    html = {
+    margin: 0,
+    padding: 0,
+    background: "black",
+    overflow: "hidden",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100vh"
+    };
+    body = html;
+
+    canvas = {
+    imageRendering: "pixelated",
+    width: "100vw",
+    height: "auto",
+    maxHeight: "100vh",
+    outline: "none"
+    };
+
+    $output = {
+    display: "none",
+    };
+  </jstyle>
+</head>
+
+<body>
+  <canvas id="screen" width="640" height="400" tabindex="0"></canvas>
+  <div id="output"></div>
+
+  <script type="module">
+    const memory = new WebAssembly.Memory({ initial: 108 });
+
+    const output = document.getElementById("output");
+    const canvas = document.getElementById("screen");
+    const doom_screen_width = 640;
+    const doom_screen_height = 400;
+
+    function readWasmString(offset, length) {
+      const bytes = new Uint8Array(memory.buffer, offset, length);
+      return new TextDecoder('utf8').decode(bytes);
+    }
+
+    function appendOutput(style) {
+      return function (offset, length) {
+        const lines = readWasmString(offset, length).split('\n');
+        for (let line of lines) {
+          if (!line) continue;
+          const span = document.createElement("span");
+          span.classList.add(style);
+          span.textContent = line;
+          output.appendChild(span);
+          output.appendChild(document.createElement("br"));
+          span.scrollIntoView({ behavior: "smooth", block: "end" });
+
+          window.parent.postMessage({ type: "term", line: line }, "*");
+        }
+      };
+    }
+
+    function getMilliseconds() {
+      return performance.now();
+    }
+
+    function drawCanvas(ptr) {
+      const doom_screen = new Uint8ClampedArray(memory.buffer, ptr, doom_screen_width * doom_screen_height * 4);
+      const render_screen = new ImageData(doom_screen, doom_screen_width, doom_screen_height);
+      const ctx = canvas.getContext('2d');
+      ctx.putImageData(render_screen, 0, 0);
+    }
+
+    const importObject = {
+      js: {
+        js_console_log: appendOutput("log"),
+        js_stdout: appendOutput("stdout"),
+        js_stderr: appendOutput("stderr"),
+        js_milliseconds_since_start: getMilliseconds,
+        js_draw_screen: drawCanvas,
+      },
+      env: { memory }
+    };
+
+    WebAssembly.instantiateStreaming(fetch('doom.wasm'), importObject).then(obj => {
+      obj.instance.exports.main();
+
+      function doomKeyCode(keyCode) {
+        switch (keyCode) {
+          case 8: return 127;             // Backspace → custom code 127
+          case 17: return 0x80 + 0x1d;   // Ctrl → 0x9d (hex)
+          case 18: return 0x80 + 0x38;   // Alt → 0xb8 (hex)
+          case 37: return 0xac;           // Left arrow → 0xac
+          case 38: return 0xad;           // Up arrow → 0xad
+          case 39: return 0xae;           // Right arrow → 0xae
+          case 40: return 0xaf;           // Down arrow → 0xaf
+          default:
+            if (keyCode >= 65 && keyCode <= 90) return keyCode + 32;   // A-Z → a-z
+            if (keyCode >= 112 && keyCode <= 123) return keyCode + 75; // F1-F12 → custom codes
+            return keyCode;                                           // everything else unchanged
+        }
+      }
+
+      const keyDown = keyCode => obj.instance.exports.add_browser_event(0, keyCode);
+      const keyUp = keyCode => obj.instance.exports.add_browser_event(1, keyCode);
+
+      canvas.addEventListener('keydown', e => {
+        keyDown(doomKeyCode(e.keyCode));
+        e.preventDefault();
+      });
+
+      canvas.addEventListener('keyup', e => {
+        keyUp(doomKeyCode(e.keyCode));
+        e.preventDefault();
+      });
+
+      canvas.focus();
+
+      function step() {
+        obj.instance.exports.doom_loop_step();
+        requestAnimationFrame(step);
+      }
+
+      requestAnimationFrame(step);
+    });
+  </script>
+</body>
+
+</html>

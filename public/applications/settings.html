@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: transparent;
+      color: white;
+    }
+    h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* spacing between text and image */
+  }
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 200px;
+      background: rgba(0, 0, 0, 0);
+      padding: 50px;
+    }
+
+    .sidebar h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: white;
+    }
+
+    .sidebar a {
+  display: inline-block;           /* behaves more like a button */
+  color: white;                    /* text color */
+  text-decoration: none;           /* remove underline */
+  padding: 12px 25px;              /* more padding, wider like a button */
+  background-color: #00BEAF;       /* solid button color */
+  border-radius: 8px;              /* subtle rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* shadow for 3D effect */
+  transition: 0.3s;                /* smooth hover animation */
+  font-weight: bold;               /* button text bold */
+  text-align: center;              /* center text */
+}
+
+.sidebar a:hover {
+  background-color: #00A88F;       /* darker on hover */
+  transform: translateY(-2px);     /* slight lift effect */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25); /* deeper shadow on hover */
+}
+
+
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0);
+    }
+    .sidebar-decoration {
+  display: flex;           /* make it flex */
+  flex-direction: column;  /* stack children vertically */
+  align-items: center;     /* horizontal centering */
+  justify-content: center; /* vertical centering */
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-align: center;      /* fallback for text inside h1 */
+}
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .image-grid img {
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .image-grid img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <div class="sidebar-decoration">
+        <img src="../WebTop4.png" width="50" alt="WebTop logo">
+        <h2>Webtop
+          
+          Settings
+        </h2>
+        <a href="#">Wallpaper</a>
+        <a href="#">Accent</a>
+        <a href="#">Security</a>
+        <a href="#">About</a>
+
+      </div>
+    </div>
+    <div class="main-content">
+      <h1>Welcome</h1>
+      <p>This is a WIP settings application for Webtop.</p>
+
+      <div id="wallpaper-tab">
+        <p>You can use this to change your wallpaper.</p>
+        <div class="image-grid">
+          <img src="../backgrounds/moon.png" />
+          <img src="../backgrounds/dark.png" />
+          <img src="../backgrounds/red.png" />
+          <img src="../backgrounds/night.png" />
+          <img src="../backgrounds/borealis1.png" />
+          <img src="../backgrounds/borealis2.png" />
+        </div>
+      </div>
+
+      <div id="accent-tab" style="display:none">
+        <p>Accent colour settings will be shown here when I add them.</p>
+      </div>
+      <div id="security-tab" style="display:none">
+        <span style="color: red;">
+          <strong>WARNING:</strong><br>
+          Lose your password and you're toast.  
+          Check <code>localStorage</code> if you wanna risk it.
+        </span>
+        
+      </div>
+    </div>
+
+    <script type="module">
+        import Toasty from '../js/Toasty.js'; // relative to this HTML file
+
+        const toaster = new Toasty("top-right", { basePath: "../" }); // "../" to reach project root
+
+      const links = document.querySelectorAll('.sidebar a');
+      const tabs = {
+        Wallpaper: document.getElementById('wallpaper-tab'),
+        Accent: document.getElementById('accent-tab'),
+        Security: document.getElementById('security-tab')
+      };
+
+      links.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const tabName = link.textContent.trim();
+
+          Object.values(tabs).forEach(tab => tab.style.display = 'none');
+
+          if (tabs[tabName]) {
+            tabs[tabName].style.display = 'block';
+          }
+        });
+      });
+
+      document.querySelectorAll('.image-grid img').forEach(img => {
+        img.addEventListener('click', () => {
+          const bgUrl = `url('${img.src}')`;
+          const targetDiv = window.parent.document.getElementById('desktop');
+          if (targetDiv) {
+            toaster.show("Wallpaper changed!", { type: "info" });
+            targetDiv.style.backgroundImage = bgUrl;
+          }
+        });
+      });
+    </script>
+</body>
+
+</html>

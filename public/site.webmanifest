@@ -1,0 +1,21 @@
+{
+  "name": "WebTop",
+  "short_name": "WebTop",
+  "icons": [
+    {
+      "src": "/WebTop4.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/WebTop4.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

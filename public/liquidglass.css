@@ -1,0 +1,68 @@
+.window {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.185); /* Semi-transparent background */
+    backdrop-filter: blur(10px); /* Fallback for browsers that support only CSS blur */
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: windowPopup 0.3s ease-out;
+    backdrop-filter: url(#lg-dist);
+}
+
+.window-bg-effect {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    backdrop-filter: url(#glass);
+    backdrop-filter: url(#liquid-glass);
+    backdrop-filter: url(#liquid-glass-new);
+    backdrop-filter: 
+      url(#liquid-glass-new) 
+      url(#fresnel)
+      drop-shadow(0 0 10px #0003)
+    ;
+}
+
+.window.closing {
+    animation: windowClose 0.3s ease-in forwards;
+}
+@keyframes windowClose {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+}
+
+
+@keyframes windowPopup {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+.window-header {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    align-items: center;
+}
+
+.window-content {
+    padding: 20px;
+    color: #fff;
+    font-size: 14px;
+    overflow: auto;
+}

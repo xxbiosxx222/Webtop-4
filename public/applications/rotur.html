@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Rotur: A Web Standard for Communication.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta content="A websocket based networking and account system" property="og:description" />
+  <meta content="https://rotur.dev" property="og:url" />
+  <meta content="https://avatars.githubusercontent.com/u/174211781?s=256&v=4" property="og:image" />
+  <meta content="#3f2f3c" name="theme-color" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+  <link rel="stylesheet" href="ste.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+
+</head>
+
+<body>
+  <div id="navbar-placeholder"></div>
+  <div class="modal">
+    <div class="modal-content">
+      <!-- Left sidebar for account list -->
+      <div class="account-sidebar">
+        <div class="sidebar-header">
+          <h2>Choose an account</h2>
+          <p>to continue to Rotur</p>
+        </div>
+
+        <div class="account-list" id="account-list">
+          <!-- Previously logged in accounts will be populated here -->
+           
+        </div>
+
+        <button class="add-account-btn" id="add-account-btn">
+          <i class="fas fa-user-plus"></i> Use another account
+        </button>
+      </div>
+
+      <!-- Right content area -->
+      <div class="main-content show">
+        <div class="logo-container">
+          <img src="../WebTop4.png" draggable="false">
+        </div>
+
+        <!-- Sign In Form -->
+        <div id="signin-form" style="display: block;">
+          <h1>Sign in to Webtop 9</h1>
+          <p class="subtitle">Sign in to your Webtop 9 Account</p>
+          <form id="signin-form-element">
+            <div class="form-group">
+              <input type="text" name="username" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+              <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn-primary">Sign in</button>
+          </form>
+          <div class="security-notice">
+            <i class="fas fa-exclamation-triangle warning-icon"></i>
+            <strong>Serious Notice:</strong> Attempting to log into administration accounts will result to your ip being logged and reported to Fail0mniflow for further action.
+
+          </div>
+          <div style="margin-top: 16px; text-align: center;">
+            <p style="margin: 0; font-size: 14px; color: #5f6368;">
+              Don't have an account?
+              <button type="button" id="show-signup-btn"
+                style="background: none; border: none; color: #1a73e8; cursor: pointer; font-size: 14px; text-decoration: underline;">Create
+                one</button>
+            </p>
+            <p style="margin: 8px 0 0 0; font-size: 12px; color: #5f6368;">
+              By signing in, you agree to our
+              <a href="./terms-of-service.html?from=auth" style="color: #1a73e8; text-decoration: none;">Terms of
+                Service</a>
+              and
+              <a href="./privacy-policy.html?from=auth" style="color: #1a73e8; text-decoration: none;">Privacy
+                Policy</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- Sign Up Form -->
+     
+      </div>
+
+      <!-- Welcome area when no form is shown -->
+      <div class="welcome-area" id="welcome-area" style="display: none;">
+        <div class="welcome-logo">
+          <img src="../WebTop4.png" draggable="false">
+        </div>
+        <div class="welcome-content">
+          <h1>Welcome to Webtop 4</h1>
+          <p>Sign in to access your webtop</p>
+        </div>
+      
+      </div>
+    </div>
+  </div>
+
+  <script src="https://kit.fontawesome.com/16f6b70bf6.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

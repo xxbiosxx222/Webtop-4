@@ -1,0 +1,464 @@
+
+
+        body {
+            font-family: "Roboto", system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: black;
+        }
+        .wt9-desktop {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: #f0f0f0; /* Optional: Add a background color for visibility */
+            overflow: hidden;
+        }
+        .wt9-panel {
+            color: white;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            bottom: 0vh;
+            filter: opacity(100%);
+        }
+        
+        .wt9-panel-fadeout {
+            z-index: 99;
+            animation-name: fadeoutlock;
+            animation-duration: 0.3s;
+            bottom: 100vh;
+            background-color: black;
+        }
+        
+        .wt9-panel-fadein {
+            z-index: 99;
+            animation-name: fadein;
+            animation-duration: 0.3s;
+            top: 0vh;
+            background-color: black;
+        }
+        .wt9-panel-loadfade {
+            color: white;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            animation-name: fadein;
+            animation-duration: 0.3s;
+            bottom: 0vh;
+            filter: opacity(100%);
+        }
+        .wt9-panel>div {
+            text-align: center;
+            position: fixed;
+            font-size: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            top: 50%;
+        }
+        .setup-container {
+            position: relative;
+            width: 100%;      /* full width so slides can move offscreen */
+            max-width: 900px; /* keep content from being too wide */
+            overflow: hidden;
+            height: 400px;    /* adjust to fit content */
+        }
+        
+        img {
+            transform: scale(1);
+            transition: transform 0.3s ease;
+        }
+        
+        img:hover {
+            transform: scale(1.1);
+        }
+        :root {
+            --taskbar-height: 45px;
+            --window-header-height: 32px;
+          }
+          
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+          }
+          
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            overflow: hidden;
+          }
+          
+          #desktop {
+            width: 100vw;
+            height: 100vh;
+            background: url('https://wallpaperaccess.com/full/317501.jpg') no-repeat center center fixed;
+            position: relative;
+          }
+          
+          #taskbar {
+            position: fixed;
+            height: var(--taskbar-height);
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+            z-index: 1000;
+            bottom: 0;
+            left: 0;
+            right: 0;
+          }
+          #search-button {
+            padding: 8px 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 4px;
+            outline: none;
+            font-size: 14px;
+            cursor: default;
+          }
+          
+          #search-button:hover {
+            cursor: pointer;
+          }
+          
+          #clock {
+            font-size: 14px;
+            text-align: center;
+          }
+          
+          #settings {
+            display: flex;
+            align-items: center;
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 0 10px;
+            cursor: pointer;
+            height: var(--taskbar-height);
+            width: 40px;
+          }
+          
+          #settings:hover {
+            background: rgba(255, 255, 255, 0.1);
+          }
+          
+          #start-button {
+            display:none;
+          }
+          
+          #task-list {
+            flex: 1;
+            display: flex;
+            gap: 5px;
+            margin: 0 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.2s ease-in-out;
+            height: 100%;
+          }
+          
+          #system-tray {
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          }
+          
+          .window {
+            position: absolute;
+            min-width: 300px;
+            min-height: 32px;
+            background: rgba(40, 40, 40, 0.60);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px 12px 0 0;
+          }
+          
+          .window-header {
+            height: var(--window-header-height);
+            display: flex;
+            align-items: center;
+            background: rgba(50, 50, 50, 0.9);
+            border-bottom: var(--window-border);
+            cursor: move;
+            border-radius: 12px 12px 0 0;
+          }
+          
+          .window-title {
+            flex: 1;
+            color: #fff;
+            font-size: 14px;
+            padding: 5px;
+            text-align: center;
+          }
+          
+          .window-controls {
+            display: flex;
+          }
+          
+          .window-button {
+            width: 26px;
+            height: 26px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            margin: 4px;
+          }
+          
+          .window-button img {
+            width: 16px;
+            height: 16px;
+          }
+          
+          .window-icon {
+            width: 26px;
+            height: 26px;
+          }
+          
+          .window-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+          }
+          
+          .window-content {
+            flex: 1;
+            overflow: auto;
+            color: #fff;
+          }
+          
+          #start-menu {
+            position: fixed;
+            bottom: var(--taskbar-height);
+            left: 10px;
+            width: 300px;
+            background: rgba(40, 40, 40, 0.95);
+            backdrop-filter: blur(10px);
+            border: var(--window-border);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            z-index: 1001;
+          }
+          #option-menu {
+            position: fixed;
+            bottom: var(--taskbar-height);
+            right: 10px;
+            width: 300px;
+            background: rgba(40, 40, 40, 0.95);
+            backdrop-filter: blur(10px);
+            border: var(--window-border);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            z-index: 1001;
+          }
+          
+          .hidden {
+            display: none;
+          }
+          
+          .menu-section {
+            margin-bottom: 10px;
+          }
+          
+          .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+          }
+          
+          .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+          }
+          
+          .menu-footer {
+            border-top: 1px solid #444;
+            padding-top: 10px;
+          }
+          
+          .task-button {
+            padding: 5px 10px;
+            background: transparent;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+          }
+          
+          .task-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+          }
+          
+          .task-button.active {
+            background: rgba(255, 255, 255, 0.2);
+          }
+          
+          .taskbar-input {
+            flex: 1;
+            max-width: 200px;
+            padding: 8px 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 4px;
+            outline: none;
+            font-size: 14px;
+            transition: all 0.2s ease-in-out;
+            gap: 5px;
+            margin: 5px;
+          }
+          
+          .taskbar-input::placeholder {
+            color: #aaa;
+          }
+          
+          .taskbar-input:focus {
+            border-color: #888;
+            width: 200px;
+            border: 1px solid #888;
+            max-width: 260px;
+            background: rgba(60, 60, 60, 0.95);
+            transition: all 0.2s ease-in-out;
+          }
+          
+          #desktop-icons {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+          }
+          
+          .desktop-icon {
+            width: 64px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            transition: filter 0.2s ease, opacity 0.2s ease;
+          }
+          
+          .desktop-icon:hover {
+            filter: brightness(1.2);
+            opacity: 0.9;
+          }
+          
+          .desktop-icon svg {
+            display: block;
+            margin: 0 auto;
+            fill: white;
+            width: 32px;
+            height: 32px;
+          }
+          .desktop-icon img {
+            display: block;
+            margin: 0 auto;
+            fill: white;
+            width: 32px;
+            height: 32px;
+          }
+          
+          .desktop-icon span {
+            color: white;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+          }
+        .setup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: auto;
+            display: flex;
+            flex-direction: row;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            padding: 3rem;
+            gap: 3rem;
+        
+            transform: translateX(100%); /* start off-screen right */
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            opacity: 0;
+        }
+        
+        .setup.active {
+            transform: translateX(0);   /* slide into view */
+            opacity: 1;
+        }
+        
+        .setup.previous {
+            transform: translateX(-100%); /* slide off-screen left */
+            opacity: 0;
+        }
+        
+
+        .setup-left-column h1 {
+            font-size: 50px;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .setup-left-column p {
+            font-size: 20px;
+            margin: 0.5rem 0;
+        }
+/* Right Column (Icon) */
+.setup-right-column {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.setup-right-column img {
+    width: 150px;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+        .next {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 0.5rem 0;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 25px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .setup-right-column img {
+            width: 150px;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        @media (max-width: 768px) {
+            .setup {
+                flex-direction: column;
+                text-align: center;
+            }
+        }

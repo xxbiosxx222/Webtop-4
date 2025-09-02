@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Webtop Setup — Fullscreen</title>
+<link rel="stylesheet" href="ste.css">
+<style>
+  :root { --accent-color: #4cafef; }
+
+  /* FULLSCREEN TRANSPARENT LAYER (so Webtop Liquid Glass shows) */
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: transparent;   /* IMPORTANT: transparent so Liquid Glass is visible */
+    color: white;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+
+  /* Overlay that covers entire viewport */
+  .setup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* allow pointer events; user interacts with overlay */
+  }
+
+  /* subtle backdrop (the real glass is provided by Webtop; we just nudge it) */
+  .setup-card {
+    width: 640px;
+    max-width: calc(100% - 48px);
+    border-radius: 14px;
+    padding: 28px;
+    box-sizing: border-box;
+    height: fit-content;
+    /* keep the overlay visually readable but transparent enough for Liquid Glass underlay */
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(10px) saturate(1.1);
+    -webkit-backdrop-filter: blur(10px) saturate(1.1);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 8px;
+  }
+  header img { width: 40px; height: auto; }
+  h1 { font-size: 20px; margin: 0; font-weight: 600; letter-spacing: -0.2px; }
+
+  p.lead { margin: 8px 0 18px; color: rgba(255,255,255,0.85); }
+
+  /* STEPS LAYOUT */
+  .steps {
+    position: relative;
+    min-height: 220px;
+  }
+
+  .step {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateY(14px) scale(0.995);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ACTIVE step uses enter animation (CSS keyframes only) */
+  .step.active {
+    pointer-events: auto;
+    animation: stepIn 360ms cubic-bezier(.2,.9,.2,1) both;
+  }
+
+  /* When we add .prev to the outgoing step we trigger exit animation */
+  .step.prev {
+    pointer-events: none;
+    animation: stepOut 260ms cubic-bezier(.4,.0,.2,1) both;
+  }
+
+  /* keyframes: enter (slide up + fade) */
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(14px) scale(0.995); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* keyframes: exit (slide down + fade out) */
+  @keyframes stepOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(16px) scale(0.995); }
+  }
+
+  /* IMAGE GRID + ACCENT SWATCHES */
+  .image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
+    gap: 12px;
+  }
+  .image-grid img {
+    width: 100%;
+    height: 84px;
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .image-grid img:hover { transform: translateY(-4px); box-shadow: 0 8px 18px rgba(0,0,0,0.6); }
+
+  .accent-preview { display:flex; gap:10px; margin-top:12px; align-items:center; }
+  .accent-box {
+    width: 44px; height: 44px; border-radius:10px; cursor:pointer; border:2px solid transparent;
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .accent-box:hover { transform: scale(1.06); border-color: rgba(255,255,255,0.12); }
+
+  /* CONTROL ROW */
+  .controls {
+    display:flex;
+    gap:12px;
+    justify-content: flex-end;
+    margin-top: 18px;
+  }
+
+  .btn {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    background: rgba(255,255,255,0.06);
+    color: white;
+    min-width: 96px;
+  }
+  .btn.primary {
+    background: var(--accent-color);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  }
+  .btn.ghost { background: transparent; border: 1px solid rgba(255,255,255,0.06); }
+
+  /* small responsive tweaks */
+  @media (max-width:520px){
+    .setup-card { padding: 18px; border-radius: 12px; }
+    .image-grid img { height: 72px; }
+  }
+</style>
+</head>
+<body>
+  <div class="setup-overlay" role="dialog" aria-modal="true" aria-label="Webtop Setup">
+    <div class="setup-card" id="setupCard" aria-live="polite">
+      <header>
+        <img src="../WebTop4.png" alt="Webtop">
+        <div>
+          <h1>Webtop Setup</h1>
+          <div style="font-size:13px; color:rgba(255,255,255,0.7)">Quick setup — get your desktop looking fresh</div>
+        </div>
+      </header>
+
+      <p class="lead">Simple setup wizard. Click to preview, then finish to apply.</p>
+
+      <div class="steps" id="steps">
+        <!-- Step 1 -->
+        <div class="step active" id="step-1">
+          <div>
+            <strong>Welcome</strong>
+            <p style="margin:8px 0 0; color:rgba(255,255,255,0.85)">Let’s pick a wallpaper and an accent color. You can change these later in Settings.</p>
+          </div>
+          <div style="flex:1"></div>
+          <div class="controls">
+            <button class="btn" id="skipBtn">Skip</button>
+            <button class="btn primary" data-next="2">Start</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Wallpaper -->
+        <div class="step" id="step-2">
+          <div>
+            <strong>Pick a wallpaper</strong>
+            <p style="margin:6px 0 10px; color:rgba(255,255,255,0.8)">Click any image to preview it on your desktop.</p>
+            <div class="image-grid" id="wallpapers">
+              <img src="../backgrounds/moon.png" alt="wallpaper moon" data-src="../backgrounds/moon.png">
+              <img src="../backgrounds/dark.png" alt="wallpaper dark" data-src="../backgrounds/dark.png">
+              <img src="../backgrounds/red.png" alt="wallpaper red" data-src="../backgrounds/red.png">
+              <img src="../backgrounds/night.png" alt="wallpaper night" data-src="../backgrounds/night.png">
+              <img src="../backgrounds/borealis1.png" alt="borealis1" data-src="../backgrounds/borealis1.png">
+              <img src="../backgrounds/borealis2.png" alt="borealis2" data-src="../backgrounds/borealis2.png">
+            </div>
+          </div>
+          <div style="flex:1"></div>
+          <div class="controls">
+            <button class="btn ghost" data-prev="1">Back</button>
+            <button class="btn primary" data-next="3">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Accent -->
+        <div class="step" id="step-3">
+          <div>
+            <strong>Choose an accent color</strong>
+            <p style="margin:6px 0 10px; color:rgba(255,255,255,0.8)">Accent updates live. It changes buttons, highlights, etc.</p>
+            <div class="accent-preview" id="accents">
+              <div class="accent-box" style="background:#4cafef" data-color="#4cafef" title="Blue"></div>
+              <div class="accent-box" style="background:#e91e63" data-color="#e91e63" title="Pink"></div>
+              <div class="accent-box" style="background:#ff9800" data-color="#ff9800" title="Orange"></div>
+              <div class="accent-box" style="background:#8bc34a" data-color="#8bc34a" title="Green"></div>
+              <div class="accent-box" style="background:#9c27b0" data-color="#9c27b0" title="Purple"></div>
+            </div>
+          </div>
+          <div style="flex:1"></div>
+          <div class="controls">
+            <button class="btn ghost" data-prev="2">Back</button>
+            <button class="btn primary" data-next="4">Finish</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Done -->
+        <div class="step" id="step-4">
+          <div>
+            <strong>All set</strong>
+            <p style="margin:6px 0 10px; color:rgba(255,255,255,0.85)">You may now close this window to Use webtop 4</p>
+          </div>
+          <div style="flex:1"></div>
+          <div class="controls">
+           
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-content" style="display:none">
+      <!-- Left sidebar for account list -->
+  
+      <!-- Welcome area when no form is shown -->
+      <div class="welcome-area" id="welcome-area">
+        <div class="welcome-logo">
+          <img src="./Rotur Logo.png" alt="Rotur Logo" draggable="false">
+        </div>
+        <div class="welcome-content">
+          <h1>Welcome to Rotur</h1>
+          <p>Sign in to access your account or create a new one.</p>
+        </div>
+        <div class="welcome-buttons">
+          <button class="btn-welcome btn-welcome-primary" id="welcome-signin-btn">
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In
+          </button>
+          <button class="btn-welcome btn-welcome-secondary" id="welcome-signup-btn">
+            <i class="fas fa-user-plus"></i>
+            Create Account
+          </button>
+        </div>
+      
+      </div>
+
+  </div>
+
+<script>
+/*
+  JS does three things only:
+   - toggles .active / .prev classes to let CSS animate enter/exit
+   - previews wallpaper/accent to parent #desktop and :root var
+   - saves to localStorage on finish
+
+  Animations themselves are pure CSS (keyframes).
+*/
+
+(function () {
+  const steps = Array.from(document.querySelectorAll('.step'));
+  let current = 0;
+  let selectedWallpaper = null;
+  let selectedAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#4cafef';
+
+  function showStep(index) {
+    if (index === current) return;
+    const outgoing = steps[current];
+    const incoming = steps[index];
+
+    // mark outgoing to play exit animation
+    outgoing.classList.remove('active');
+    outgoing.classList.add('prev');
+
+    // when outgoing animation ends, clean up .prev
+    const cleanup = (ev) => {
+      outgoing.classList.remove('prev');
+      outgoing.removeEventListener('animationend', cleanup);
+    };
+    outgoing.addEventListener('animationend', cleanup);
+
+    // activate incoming (CSS handles enter anim)
+    incoming.classList.add('active');
+    incoming.scrollTop = 0;
+    current = index;
+  }
+
+  // wired data-next and data-prev buttons
+  document.querySelectorAll('[data-next]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-next'), 10) - 1;
+      if (!isNaN(idx)) showStep(idx);
+    });
+  });
+  document.querySelectorAll('[data-prev]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-prev'), 10) - 1;
+      if (!isNaN(idx)) showStep(idx);
+    });
+  });
+
+  document.getElementById('skipBtn').addEventListener('click', () => {
+    // skip to finish
+    showStep(3);
+  });
+
+  // wallpaper previews
+  document.querySelectorAll('#wallpapers img').forEach(img => {
+    img.addEventListener('click', () => {
+      selectedWallpaper = `url('${img.dataset.src || img.src}')`;
+      const desktop = window.parent?.document?.getElementById('desktop');
+      if (desktop) desktop.style.backgroundImage = selectedWallpaper;
+      // add a subtle focus ring on clicked image
+      document.querySelectorAll('#wallpapers img').forEach(i => i.style.outline = 'none');
+      img.style.outline = '3px solid rgba(255,255,255,0.08)';
+    });
+  });
+
+  // accent selection
+  document.querySelectorAll('#accents .accent-box').forEach(box => {
+    box.addEventListener('click', () => {
+      selectedAccent = box.dataset.color;
+      document.documentElement.style.setProperty('--accent-color', selectedAccent);
+      // apply to parent root too so the whole Webtop uses it
+      const parentRoot = window.parent?.document?.documentElement;
+      if (parentRoot) parentRoot.style.setProperty('--accent-color', selectedAccent);
+
+      // visual selection border
+      document.querySelectorAll('#accents .accent-box').forEach(b => b.style.borderColor = 'transparent');
+      box.style.borderColor = 'rgba(255,255,255,0.12)';
+    });
+  });
+
+  // finish/apply
+  document.getElementById('finishBtn').addEventListener('click', () => {
+    // persist
+    try {
+      localStorage.setItem('webtopWallpaper', selectedWallpaper);
+      localStorage.setItem('webtopAccent', selectedAccent);
+    } catch (err) {
+      console.warn('Could not persist settings', err);
+    }
+
+    // apply to parent
+    const desktop = window.parent?.document?.getElementById('desktop');
+    if (desktop && selectedWallpaper) desktop.style.backgroundImage = selectedWallpaper;
+    const parentRoot = window.parent?.document?.documentElement;
+    if (parentRoot && selectedAccent) parentRoot.style.setProperty('--accent-color', selectedAccent);
+
+    // close overlay: hide it (parent may want to fully remove iframe)
+    document.querySelector('.setup-overlay').style.display = 'none';
+  });
+
+  // auto-apply saved settings on load (preview)
+  window.addEventListener('load', () => {
+    const savedWallpaper = localStorage.getItem('webtopWallpaper');
+    const savedAccent = localStorage.getItem('webtopAccent');
+    if (savedWallpaper) {
+      const desktop = window.parent?.document?.getElementById('desktop');
+      if (desktop) desktop.style.backgroundImage = savedWallpaper;
+      selectedWallpaper = savedWallpaper;
+    }
+    if (savedAccent) {
+      document.documentElement.style.setProperty('--accent-color', savedAccent);
+      const parentRoot = window.parent?.document?.documentElement;
+      if (parentRoot) parentRoot.style.setProperty('--accent-color', savedAccent);
+      selectedAccent = savedAccent;
+    }
+  });
+})();
+</script>
+
+<script src="https://kit.fontawesome.com/16f6b70bf6.js" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webtop Code</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/theme/monokai.min.css">
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    @font-face {
+      font-family: 'Miracode';
+      src: url('./Miracode.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    #container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    #main-content {
+      display: flex;
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
+
+    #sidebar {
+      width: 32px;
+      background-color: rgba(50, 50, 50, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .sidebar-btn {
+      width: 26px;
+      height: 26px;
+      background: transparent;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .sidebar-btn img {
+      width: 18px;
+      height: 18px;
+    }
+
+    .sidebar-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    #editor {
+      flex: 1;
+      height: calc(100vh - 25px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .CodeMirror {
+      font-family: 'Miracode', monospace;
+      font-feature-settings: "liga" 1;
+      background-color: rgba(0, 0, 0, 0.2) !important;
+      height: 100%;
+      width: 100%;
+      font-size: 14px;
+      flex: 1;
+      overflow: auto !important;
+    }
+
+    .CodeMirror-gutters {
+      background-color: rgba(0, 0, 0, 0.4) !important;
+    }
+
+    #statusbar {
+      display: flex;
+      align-items: center;
+      height: 25px;
+      background-color: rgba(50, 50, 50, 0.9);
+      color: white;
+      font-size: 12px;
+      line-height: 25px;
+      padding: 0 10px;
+      font-family: 'Miracode', monospace;
+      user-select: none;
+    }
+
+    #statusbar span {
+      margin-right: 20px;
+    }
+
+    span#file-name {
+      margin-left: auto;
+      margin-right: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="container">
+    <div id="main-content">
+      <div id="sidebar">
+        <button class="sidebar-btn" id="newBtn"><img src="../icons/wtc/file.svg" alt="New"></button>
+        <button class="sidebar-btn" id="loadBtn"><img src="../icons/wtc/folder-open.svg" alt="Load"></button>
+        <button class="sidebar-btn" id="saveBtn"><img src="../icons/wtc/save2.svg" alt="Save"></button>
+        <button class="sidebar-btn" id="reloadBtn"><img src="../icons/wtc/list-restart.svg" alt="Reload"></button>
+      </div>
+      <div id="editor"></div>
+    </div>
+    <div id="statusbar">
+      <span id="line">Ln ?, Col ?, Pos ?</span>
+      <span id="indent">Spaces: ?</span>
+      <span id="file-name">???</span>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/javascript/javascript.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/htmlmixed/htmlmixed.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/css/css.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/xml/xml.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/markdown/markdown.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/clike/clike.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/python/python.js"></script>
+
+  <script>
+    var editor = CodeMirror(document.getElementById('editor'), {
+      lineNumbers: true,
+      mode: "javascript",
+      theme: "monokai",
+      indentUnit: 2,
+      tabSize: 2,
+    });
+    document.getElementById("indent").textContent = `Spaces: ${editor.getOption("indentUnit")}`;
+
+    editor.on("cursorActivity", () => {
+      const cursor = editor.getCursor();
+      const pos = editor.indexFromPos(cursor);
+      const line = cursor.line + 1;
+      const ch = cursor.ch + 1;
+
+      document.getElementById('line').textContent = `Ln ${line}, Col ${ch}, Pos ${pos + 1}`;
+    });
+
+    let fileHandle = null;
+
+    function newFile() {
+      const confirmNew = confirm("Discard current file and start a new one?");
+      if (confirmNew) {
+        editor.setValue('');
+        fileHandle = null;
+      }
+    }
+
+    async function saveFile() {
+      const content = editor.getValue();
+      try {
+        if (!fileHandle) {
+          fileHandle = await window.showSaveFilePicker({
+            types: [
+              {
+                description: 'JavaScript Files',
+                accept: { 'application/javascript': ['.js'] }
+              },
+              {
+                description: 'HTML Files',
+                accept: { 'text/html': ['.html', '.htm'] }
+              },
+              {
+                description: 'CSS Files',
+                accept: { 'text/css': ['.css'] }
+              },
+              {
+                description: 'JSON Files',
+                accept: { 'application/json': ['.json'] }
+              },
+              {
+                description: 'Markdown Files',
+                accept: { 'text/markdown': ['.md'] }
+              },
+              {
+                description: 'Plain Text',
+                accept: { 'text/plain': ['.txt'] }
+              }
+            ]
+          });
+        }
+
+        const writable = await fileHandle.createWritable();
+        await writable.write(content);
+        await writable.close();
+      } catch (err) {
+        console.error('Save cancelled or failed:', err);
+      }
+    }
+
+    function getModeFromFilename(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      switch (ext) {
+        case 'js': return 'javascript';
+        case 'html':
+        case 'htm': return 'htmlmixed';
+        case 'css': return 'css';
+        case 'json': return 'application/json';
+        case 'md': return 'markdown';
+        case 'txt': return 'text/plain';
+        case 'c':
+        case 'cpp':
+        case 'h':
+        case 'hpp': return 'text/x-c++src';
+        case 'java': return 'text/x-java';
+        case 'py': return 'python';
+        default: return 'text/plain';
+      }
+    }
+
+    async function loadFile() {
+      try {
+        [fileHandle] = await window.showOpenFilePicker({
+            types: [
+              {
+                description: 'JavaScript Files',
+                accept: { 'application/javascript': ['.js'] }
+              },
+              {
+                description: 'HTML Files',
+                accept: { 'text/html': ['.html', '.htm'] }
+              },
+              {
+                description: 'CSS Files',
+                accept: { 'text/css': ['.css'] }
+              },
+              {
+                description: 'JSON Files',
+                accept: { 'application/json': ['.json'] }
+              },
+              {
+                description: 'Markdown Files',
+                accept: { 'text/markdown': ['.md'] }
+              },
+              {
+                description: 'Plain Text',
+                accept: { 'text/plain': ['.txt'] }
+              }
+            ]
+        });
+
+        await readFile();
+      } catch (err) {
+        console.error('File load cancelled or failed:', err);
+      }
+    }
+
+    async function readFile() {
+      if (!fileHandle) {
+        console.warn("No file selected.");
+        return;
+      }
+
+      try {
+        const file = await fileHandle.getFile();
+        const text = await file.text();
+        editor.setValue(text);
+        document.getElementById("file-name").textContent = file.name;
+
+        const mode = getModeFromFilename(file.name);
+        editor.setOption("mode", mode);
+      } catch (err) {
+        console.error('Error reading file:', err);
+      }
+    }
+
+    document.getElementById('reloadBtn').addEventListener('click', readFile);
+    document.getElementById('saveBtn').addEventListener('click', saveFile);
+    document.getElementById('loadBtn').addEventListener('click', loadFile);
+    document.getElementById('newBtn').addEventListener('click', newFile);
+  </script>
+</body>
+
+</html>
