@@ -1,5 +1,5 @@
 {
-  "type": "module"
+  "type": "module",
   "dependencies": {
     "devtools-detect": "^4.0.2",
     "express": "^5.1.0"
