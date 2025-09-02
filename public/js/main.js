@@ -2,24 +2,11 @@ import { WindowManager } from './windowManager.js';
 import { startMenuManager } from './startMenuManager.js';
 import { clockManager } from './clockManager.js';
 import Toasty from './Toasty.js';
-import devtools from '../node_modules/devtools-detect/index.js';
 window.toasty = new Toasty("top-right", { basePath: "./" });
 const windowManager = new WindowManager();
 const startMenu = startMenuManager();
 clockManager();
 
-
-
-
-
-  // React to open/close
-  window.addEventListener('devtoolschange', event => {
-    if (event.detail.isOpen) {
-     toasty.show("🛠️ DevTools opened.", { type: "warning", duration: 8000 });
-    } else {
-      toasty.show("🔧 DevTools closed.", { type: "info", duration: 4000 });
-    }
-  });
 window.getAccent = function(rgbaInput) {
   const taskbar = window.parent.document.getElementById("taskbar");
   if (!taskbar) return rgbaInput;
