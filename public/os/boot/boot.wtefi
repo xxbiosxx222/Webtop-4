@@ -1,0 +1,48 @@
+# EFI File for booting up Webtop 4
+OS = WEBTOP 4
+
+
+COMPILER = bootstrapper.js
+
+
+@preload@
+
+$print{str}: Preloading... 
+# Preload Instructions
+$cd: ../icons
+
+$p: */doom.svg | ptype:svg
+$p: */minecraft.png
+$p: */vsc.png
+$p: */wtc.png | Filename: webtop code
+$p: */term.png
+$p: */wtc.svg | ptype:svg | Filename: webtop code
+
+# Preload Controls
+
+$p: */controls/close.svg | ptype:svg
+$p: */controls/maximize-1.svg | ptype:svg
+$p: */controls/maximize-2.svg | ptype:svg
+$p: */controls/maximize.svg | ptype:svg
+$p: */controls/minimize.svg | ptype:svg
+$p: */controls/minus.svg | ptype:svg
+$p: */controls/plus.svg | ptype:svg
+$p: */controls/shade_down.svg | ptype:svg
+$p: */controls/shade_up.svg | ptype:svg
+$p: */controls/x.svg | ptype:svg
+
+$cd: ..
+
+$p: */index.html | ptype:sys_gui
+$p: */js/main.js | ptype:sys_file-javascript
+$p: */js/startMenuManager.js | ptype:sys_file-javascript
+$p: */js/Toasty.js | ptype:sys_file-javascript
+$p: */js/windowManager.js | ptype:sys_file-javascript
+$p: */js/clockManager.js | ptype:sys_file-javascript
+
+@preload end@
+
+# fill in instructions to run the web OS
+
+
+$boot */index.html

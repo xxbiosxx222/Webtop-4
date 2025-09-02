@@ -95,12 +95,12 @@
       function doomKeyCode(keyCode) {
         switch (keyCode) {
           case 8: return 127;             // Backspace → custom code 127
-          case 17: return 0x80 + 0x1d;   // Ctrl → 0x9d (hex)
+          case 81: return 0x80 + 0x1d;   // Ctrl → 0x9d (hex)
           case 18: return 0x80 + 0x38;   // Alt → 0xb8 (hex)
-          case 37: return 0xac;           // Left arrow → 0xac
-          case 38: return 0xad;           // Up arrow → 0xad
-          case 39: return 0xae;           // Right arrow → 0xae
-          case 40: return 0xaf;           // Down arrow → 0xaf
+          case 65: return 0xac;           // Left arrow → 0xac
+          case 87: return 0xad;           // Up arrow → 0xad
+          case 68: return 0xae;           // Right arrow → 0xae
+          case 83: return 0xaf;           // Down arrow → 0xaf
           default:
             if (keyCode >= 65 && keyCode <= 90) return keyCode + 32;   // A-Z → a-z
             if (keyCode >= 112 && keyCode <= 123) return keyCode + 75; // F1-F12 → custom codes

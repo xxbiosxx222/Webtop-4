@@ -1,9 +1,35 @@
-:root {
-  --taskbar-height: 45px;
-  --window-header-height: 32px;
-  --taskbar-pos: -50%;
+/* 1. Register the custom properties so the browser knows how to animate them. */
+@property --taskbar-height {
+  syntax: '<length>';
+  initial-value: 45px;
+  inherits: false; /* or true, depending on needs */
 }
 
+@property --window-header-height {
+  syntax: '<length>';
+  initial-value: 32px;
+  inherits: false;
+}
+
+@property --taskbar-pos {
+  syntax: '<percentage>';
+  initial-value: -50%;
+  inherits: false;
+}
+
+@property --taskbar-scale {
+  syntax: '<number>';
+  initial-value: 1.0;
+  inherits: false;
+}
+
+:root {
+  /* 2. Define the transition on the variables themselves */
+  transition: --taskbar-height 0.5s ease-in-out,
+              --window-header-height 0.5s ease-in-out,
+              --taskbar-pos 0.5s ease-in-out,
+              --taskbar-scale 0.5s ease-in-out;
+}
 * {
   margin: 0;
   padding: 0;
@@ -25,11 +51,22 @@ body {
   
   position: relative;
 }
+
+#desktop .inactive {
+  display:none;
+}
+
+.efi {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  color: green;
+}
 #taskbar {
   position: fixed;
   bottom: 12px;
   left: 50%;
-  transform: translateX(var(--taskbar-pos));
+  transform: translateX(var(--taskbar-pos)) scale(var(--taskbar-scale));
   height: 72px;
   padding: 0 18px;
   background: rgba(50, 50, 50, 0.24);
@@ -39,7 +76,7 @@ body {
   align-items: center;
   gap: 18px;
   z-index: 1000;
-  backdrop-filter: url(#lg-dist);
+  backdrop-filter: url(#glass-distortion);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
@@ -159,6 +196,20 @@ body {
 }
 
 
+.window {
+  position: absolute;
+  min-width: 300px;
+  min-height: 32px;
+  background: rgba(40, 40, 40, 0.60);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px 12px 0 0;
+    animation: windowPopup 0.3s ease-out;
+    backdrop-filter: url(#glass-distortion);
+}
+
 .window-header {
   height: var(--window-header-height);
   display: flex;
@@ -175,10 +226,6 @@ body {
   font-size: 14px;
   padding: 5px;
   text-align: center;
-  justify-content: center;
-  display: flex;
-  align-items: center; /* makes icon and text line up */
-  gap: 8px; /* space between icon and text */
 }
 
 .window-controls {
@@ -219,6 +266,50 @@ body {
   overflow: auto;
   color: #fff;
 }
+
+.window.closing {
+    animation: windowClose 0.3s ease-in forwards;
+}
+@keyframes windowClose {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+}
+
+
+@keyframes windowPopup {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+.window-header {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    align-items: center;
+}
+
+.window-content {
+    padding: 20px;
+    color: #fff;
+    font-size: 14px;
+    overflow: auto;
+}
+
 
 #start-menu {
   position: fixed;

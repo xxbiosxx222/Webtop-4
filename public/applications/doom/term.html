@@ -50,6 +50,10 @@
 
                 terminal.scrollTop = terminal.scrollHeight;
                 lineEl.scrollIntoView({ behavior: "smooth", block: "end" });
+
+                if (event.data.line == "PANIC!!") {
+                window.parent.postMessage({ type: "toast", line: "DOOM has crashed", type: "alert" }, "*");
+                }
             }
         });
 

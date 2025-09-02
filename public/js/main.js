@@ -7,6 +7,12 @@ const windowManager = new WindowManager();
 const startMenu = startMenuManager();
 clockManager();
 
+
+ window.addEventListener("message", (event) => {
+            if (event.data?.type === "toast" && typeof event.data.line === "string" && typeof event.data.type === "string") {
+                window.toasty.show(event.data.line,{type: event.data.type})
+            }
+        });
 window.getAccent = function(rgbaInput) {
   const taskbar = window.parent.document.getElementById("taskbar");
   if (!taskbar) return rgbaInput;
