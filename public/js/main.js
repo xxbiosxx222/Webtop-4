@@ -1,12 +1,27 @@
 import { WindowManager } from './windowManager.js';
 import { startMenuManager } from './startMenuManager.js';
 import { clockManager } from './clockManager.js';
+import { ContentLoader } from './content-loader.js';
+
+
 import Toasty from './Toasty.js';
 window.toasty = new Toasty("top-right", { basePath: "./" });
 const windowManager = new WindowManager();
 const startMenu = startMenuManager();
 clockManager();
 
+window.addEventListener("DOMContentLoaded", () => {
+
+
+  const progressEl = document.getElementById("load-progress");
+  const logEl = document.getElementById("log-text");
+  const setupEl = document.getElementById("setup-screen");
+  const lockEl = document.getElementById("wt9-lock");
+  const desktopEl = document.getElementById("desktop");
+  
+  const loader = new ContentLoader("webtop-cache-v1", progressEl, logEl, setupEl, lockEl, desktopEl);
+  loader.loadAssets("/assets.json");
+});
 
  window.addEventListener("message", (event) => {
             if (event.data?.type === "toast" && typeof event.data.line === "string" && typeof event.data.type === "string") {

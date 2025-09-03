@@ -80,7 +80,26 @@
       gap: 16px;
       margin-top: 20px;
     }
+    .btn-welcome {
+    padding: 14px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
 
+.btn-welcome-primary {
+    background: #1a73e8;
+    border: none;
+    color: white;
+}
     .image-grid img {
       width: 100%;
       border-radius: 8px;
@@ -92,10 +111,142 @@
       transform: scale(1.05);
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
     }
+    .wt9-panel input,
+select {
+    border: none;
+    font-family: "Asap", "Roboto Flex", Roboto, sans-serif;
+    background-color: #222;
+    padding: 1px 2px;
+}
+
+.wt9-panel input {
+    color: #fff;
+    text-align: center;
+    width: fit-content;
+    font-family: "Asap", "Roboto Flex", Roboto, sans-serif;
+    border-radius: 4px;
+}
+
+.wt9-panel div input {
+    font-size: 30px;
+}
+
+
+
+.wt9-panel {
+    color: white;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    bottom: 0vh;
+    display: none;
+    background-color: black;
+    filter: opacity(100%);
+}
+
+.wt9-panel-fadeout {
+    z-index: 99;
+    animation-name: fadeoutlock;
+    animation-duration: 0.3s;
+    bottom: 100vh;
+    background-color: black;
+}
+
+.wt9-panel-fadein {
+    z-index: 99;
+    animation-name: fadein;
+    animation-duration: 0.3s;
+    top: 0vh;
+    background-color: black;
+}
+.wt9-panel-loadfade {
+    color: white;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    animation-name: fadein;
+    animation-duration: 0.3s;
+    bottom: 0vh;
+    filter: opacity(100%);
+}
+.wt9-panel>div {
+    text-align: center;
+    position: fixed;
+    font-size: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    top: 50%;
+}
+
+
+@keyframes fadeoutlock {
+    from {
+        bottom: 0;
+        filter: opacity(100%);
+    }
+
+    to {
+        bottom: 100vh;
+        filter: opacity(0%);
+    }
+}
+
+@keyframes fadein {
+    from {
+        top: 100vh;
+        filter: opacity(0%);
+    }
+
+    to {
+        top: 0vh;
+        filter: opacity(100%);
+    }
+}
+
+@keyframes osfadein {
+    from {
+        bottom: 300;
+        filter: opacity(0%);
+    }
+
+    to {
+        bottom: 0;
+        filter: opacity(100%);
+    }
+}
+
+@keyframes animnotif {
+    from {
+        top: -560px;
+        filter: opacity(0%);
+    }
+
+    to {
+        top: 0;
+        filter: opacity(100%);
+    }
+}
   </style>
 </head>
 
 <body>
+  <div id="wt9-lock" class="wt9-panel" style="display:none;">
+
+    <div>
+        <h1 id="lock-header">
+            Welcome back!
+        </h1>
+        <script>
+          if (localStorage.getItem('webtop-username')) {
+            document.getElementById('lock-header').innerText = `${localStorage.getItem('webtop-username')}! Are You SURE you want to factory reset Webtop 4?.`;
+          }
+        </script>
+        This will erase all data, including your password! and Cache<br><br>
+        Type in "CONFIRM RESET" in all caps to continue:<br><br>
+        <input type="text" maxlength="13" id="resetcode">
+    </div>
+
+  </div>
   <div class="container">
     <div class="sidebar">
       <div class="sidebar-decoration">
@@ -136,6 +287,8 @@
           Lose your password and you're toast.  
           Check <code>localStorage</code> if you wanna risk it.
         </span>
+        <br>
+        <button class="btn-welcome btn-welcome-primary" id="facreset">Factory Reset</button>
         
       </div>
     </div>
@@ -164,7 +317,38 @@
           }
         });
       });
+      // preload the sound
+const typingSound = new Audio('../os/sound/deck_ui_typing.wav');
+typingSound.volume = 0.5; // optional: adjust volume
 
+// function to attach typing sound to inputs
+function attachTypingSound(inputSelector) {
+  const inputs = document.querySelectorAll(inputSelector);
+  inputs.forEach(input => {
+    input.addEventListener('keydown', () => {
+      // play sound; cloneNode ensures rapid typing plays overlapping sounds
+      const soundClone = typingSound.cloneNode();
+      soundClone.play().catch(e => console.warn("Audio play blocked", e));
+    });
+  });
+}
+
+      function factoryReset() {
+        document.getElementById('wt9-lock').style.display = 'flex';
+        document.getElementById('wt9-lock').classList.add('wt9-panel-loadfade');
+        document.getElementById('resetcode').addEventListener('input', (e) => {
+          if (e.target.value === "CONFIRM RESET") {
+            localStorage.clear();
+            sessionStorage.clear();
+            toaster.show("Factory reset complete. Reloading...", { type: "success" });
+            setTimeout(() => {
+              location.reload();
+            }, 2000);
+          }
+        });
+        attachTypingSound('#resetcode');
+      }
+      document.getElementById('facreset').addEventListener('click', factoryReset);
       document.querySelectorAll('.image-grid img').forEach(img => {
         img.addEventListener('click', () => {
           const bgUrl = `url('${img.src}')`;

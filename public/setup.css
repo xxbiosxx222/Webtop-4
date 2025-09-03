@@ -1,0 +1,278 @@
+/* Overlay that covers entire viewport */
+.setup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* allow pointer events; user interacts with overlay */
+  }
+
+  /* subtle backdrop (the real glass is provided by Webtop; we just nudge it) */
+  .setup-card {
+    width: 640px;
+    max-width: calc(100% - 48px);
+    border-radius: 14px;
+    padding: 28px;
+    box-sizing: border-box;
+    height: fit-content;
+    /* keep the overlay visually readable but transparent enough for Glass underlay */
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(10px) saturate(1.1);
+    -webkit-backdrop-filter: blur(10px) saturate(1.1);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 8px;
+  }
+  header img { width: 40px; height: auto; }
+  h1 { font-size: 20px; margin: 0; font-weight: 600; letter-spacing: -0.2px; }
+
+  p.lead { margin: 8px 0 18px; color: rgba(255,255,255,0.85); }
+
+  /* STEPS LAYOUT */
+  .steps {
+    position: relative;
+    min-height: 220px;
+  }
+
+  .step {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateY(14px) scale(0.995);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ACTIVE step uses enter animation (CSS keyframes only) */
+  .step.active {
+    pointer-events: auto;
+    animation: stepIn 360ms cubic-bezier(.2,.9,.2,1) both;
+  }
+  .step input {
+    width: 100%;
+    padding: 16px 16px;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #202124;
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.step input:focus {
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+}
+
+.step input::placeholder {
+    color: #999;
+    font-weight: 400;
+}
+
+  /* When we add .prev to the outgoing step we trigger exit animation */
+  .step.prev {
+    pointer-events: none;
+    animation: stepOut 260ms cubic-bezier(.4,.0,.2,1) both;
+  }
+
+  /* keyframes: enter (slide up + fade) */
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(14px) scale(0.995); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* keyframes: exit (slide down + fade out) */
+  @keyframes stepOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(16px) scale(0.995); }
+  }
+
+  /* IMAGE GRID + ACCENT SWATCHES */
+  .image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
+    gap: 12px;
+  }
+  .image-grid img {
+    width: 100%;
+    height: 84px;
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .image-grid img:hover { transform: translateY(-4px); box-shadow: 0 8px 18px rgba(0,0,0,0.6); }
+
+  .accent-preview { display:flex; gap:10px; margin-top:12px; align-items:center; }
+  .accent-box {
+    width: 44px; height: 44px; border-radius:10px; cursor:pointer; border:2px solid transparent;
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .accent-box:hover { transform: scale(1.06); border-color: rgba(255,255,255,0.12); }
+  .step h1 {
+    font-size: 24px;
+    font-weight: 400;
+    margin: 16px 0 0 0;
+    letter-spacing: 0;
+    line-height: 1.3333;
+}
+
+.setup-btn {
+    padding: 14px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #1a73e8;
+    border: none;
+    color: white;
+}
+.step .subtitle {
+    font-size: 16px;
+    color: #5f6368;
+    margin-bottom: 24px;
+    font-weight: 400;
+    line-height: 1.3333;
+}
+  /* small responsive tweaks */
+  @media (max-width:520px){
+    .setup-card { padding: 18px; border-radius: 12px; }
+    .image-grid img { height: 72px; }
+  }
+
+
+.wt9-panel input,
+select {
+    border: none;
+    font-family: "Asap", "Roboto Flex", Roboto, sans-serif;
+    background-color: #222;
+    padding: 1px 2px;
+}
+
+.wt9-panel input {
+    color: #fff;
+    text-align: center;
+    max-width: 120px;
+    font-family: "Asap", "Roboto Flex", Roboto, sans-serif;
+    border-radius: 4px;
+}
+
+.wt9-panel div input {
+    font-size: 30px;
+}
+
+
+
+.wt9-panel {
+    color: white;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    bottom: 0vh;
+    display: none;
+    background-color: black;
+    filter: opacity(100%);
+}
+
+.wt9-panel-fadeout {
+    z-index: 99;
+    animation-name: fadeoutlock;
+    animation-duration: 0.3s;
+    bottom: 100vh;
+    background-color: black;
+}
+
+.wt9-panel-fadein {
+    z-index: 99;
+    animation-name: fadein;
+    animation-duration: 0.3s;
+    top: 0vh;
+    background-color: black;
+}
+.wt9-panel-loadfade {
+    color: white;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    animation-name: fadein;
+    animation-duration: 0.3s;
+    bottom: 0vh;
+    filter: opacity(100%);
+}
+.wt9-panel>div {
+    text-align: center;
+    position: fixed;
+    font-size: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    top: 50%;
+}
+
+
+@keyframes fadeoutlock {
+    from {
+        bottom: 0;
+        filter: opacity(100%);
+    }
+
+    to {
+        bottom: 100vh;
+        filter: opacity(0%);
+    }
+}
+
+@keyframes fadein {
+    from {
+        top: 100vh;
+        filter: opacity(0%);
+    }
+
+    to {
+        top: 0vh;
+        filter: opacity(100%);
+    }
+}
+
+@keyframes osfadein {
+    from {
+        bottom: 300;
+        filter: opacity(0%);
+    }
+
+    to {
+        bottom: 0;
+        filter: opacity(100%);
+    }
+}
+
+@keyframes animnotif {
+    from {
+        top: -560px;
+        filter: opacity(0%);
+    }
+
+    to {
+        top: 0;
+        filter: opacity(100%);
+    }
+}

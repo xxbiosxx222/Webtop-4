@@ -8,9 +8,10 @@
   <link rel="icon" type="image/png" href="WebTop4.png" sizes="96x96" />
   <meta name="apple-mobile-web-app-title" content="WebTop" />
   <link rel="manifest" href="/site.webmanifest" /></head>
+  <link rel="stylesheet" href="setup.css">
 <body>
  
-  <div id="desktop">
+  <div id="desktop"style="display:none;">
     <div id="desktop-icons">
       <div class="desktop-icon" data-title="Terminal" data-url="./applications/term.html" data-width="782" data-height="472">
         <img src="./icons/term.png"/>
@@ -36,6 +37,9 @@
       </div>
       <div class="desktop-icon" data-title="Doom" data-url="./applications/doom/" data-width="640" data-height="406">
         <img src="./icons/doom.svg"/>
+      </div>
+      <div class="desktop-icon" data-title="Nova File Explorer" data-url="explorer.html" data-width="640" data-height="406">
+        <img src="./icons/file-icons/nova.png"/>
       </div>
           </div>    
     <div id="taskbar">
@@ -91,12 +95,79 @@
 
     <div id="windows"></div>
   </div>
+  <div class="wt4-loader" id="loader-screen">
+    <div class="loader" id="cacher">
+     <img src="WebTop4.png" alt="Webtop 4 Logo" width="200">
+     <h1>Loading Webtop 4</h1>
+     <br>
+     <progress id="load-progress" value="50" max="100">50%</progress>
+     <div class="logger">
+        <p id="log-text">Initializing...</p>
+     </div>
+    </div>
+    <div id="wt9-lock" class="wt9-panel" style="display:none;">
 
+      <div>
+          <h1 id="lock-header">
+              Welcome back!
+          </h1>
+          <script>
+            if (localStorage.getItem('webtop-username')) {
+              document.getElementById('lock-header').innerText = `Welcome back, ${localStorage.getItem('webtop-username')}!`;
+            }
+          </script>
+          For your security, please enter your passcode.<br><br>
+          <input type="password" maxlength="6" id="passcode">
+      </div>
+
+    </div>
+    <div class="setup-overlay" role="dialog" aria-modal="true" aria-label="Webtop Setup" id="setup-screen" style="display: none;">
+      <div class="setup-card" id="setupCard" aria-live="polite">
+        <header>
+          <img src="../WebTop4.png" alt="Webtop">
+          <div>
+            <h1>Webtop Setup</h1>
+            <div style="font-size:13px; color:rgba(255,255,255,0.7)">Quick setup — get your desktop looking fresh</div>
+          </div>
+        </header>
+  
+        <p class="lead">Simple setup wizard. Click to preview, then finish to apply.</p>
+  
+        <div class="steps" id="steps">
+          <!-- Step 1 -->
+          <div class="step active" id="step-1">
+        <h1>Initial Setup</h1>
+        <p>Welcome to Webtop 4! Let's get your system set up.</p>
+        <label for="username">Enter your username:</label>
+        <input type="text" id="username" name="username" placeholder="Username">
+        <br>
+        <button class="setup-btn" data-next="2">Next</button>
+          </div>
+          <div class="step " id="step-2">
+            <label for="password">Create a 4-digit pin (leave blank to skip)</label>
+            <input type="password" id="password" name="password" placeholder="4 digit pin">
+            <button class="setup-btn" data-next="3">Next</button>
+            <br>
+    
+              </div>
+            <div class="step" id="step-3">
+                <div>
+                  <strong>All set</strong>
+                  <p style="margin:6px 0 10px; color:rgba(255,255,255,0.85)">Press Next to continue</p>
+                </div>
+                <div style="flex:1"></div>
+                <div class="controls">
+                  <button class="setup-btn" id="finishBtn">Next</button>
+                </div>
+        </div>
+    </div>
+  </div>
   </div>
   <svg style="display: none"><filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox"><feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" seed="5" result="turbulence" /><feComponentTransfer in="turbulence" result="mapped"><feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" /><feFuncG type="gamma" amplitude="0" exponent="1" offset="0" /><feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" /></feComponentTransfer><feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" /><feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lighting-color="white" result="specLight"><fePointLight x="-200" y="-200" z="300" /></feSpecularLighting><feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" /><feDisplacementMap in="SourceGraphic" in2="softMap" scale="150" xChannelSelector="R" yChannelSelector="G" /></filter></svg>
 
   <script type="module" src="https://cdn.jsdelivr.net/gh/Quicksilver-Division/LiqGlass-Lib@main/dist/liqglass.min.js" defer></script>
   <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/novaScript.js"></script>
   
 </body>
 </html>

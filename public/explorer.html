@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebTop File Explorer</title>
+<style>
+body { font-family: 'Segoe UI', sans-serif; background: #1e1e1e; color: #eee; margin: 0; display: flex; height: 100vh; }
+#explorer { width: 70%; padding: 20px; overflow-y: auto; border-right: 1px solid #333; }
+#sidebar { width: 30%; padding: 20px; border-left: 1px solid #333; }
+header { font-weight: bold; font-size: 1.2em; margin-bottom: 10px; }
+.file, .folder { display: flex; align-items: center; padding: 5px 10px; margin: 2px 0; cursor: pointer; border-radius: 4px; }
+.file:hover, .folder:hover { background: #3a3a3a; }
+.file img, .folder img { width: 20px; height: 20px; margin-right: 5px; }
+#breadcrumb { margin-bottom: 10px; }
+textarea { width: 100%; height: 100px; background: #2a2a2a; color: #eee; border: none; padding: 10px; font-family: monospace; display: none; margin-top: 10px; }
+audio, video { width: 100%; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div id="explorer">
+    <header>WebTop File Explorer</header>
+    <div id="breadcrumb">Path: /os/</div>
+    <div id="fileList"></div>
+    <textarea id="fileContent"></textarea>
+</div>
+
+<div id="sidebar">
+    <header>Preview</header>
+    <div id="previewArea">Select a file to preview</div>
+</div>
+
+<script>
+const CACHE_NAME = "webtop-cache-v1";
+let currentPath = "os/"; // OS folder root
+let pathStack = []; // For returning from .vink portals
+
+// --- Helpers ---
+async function openCache() { return await caches.open(CACHE_NAME); }
+
+async function listFiles(path) {
+    const cache = await openCache();
+    const keys = await cache.keys();
+    const files = [], folders = new Set();
+    for (let k of keys) {
+        const url = new URL(k.url);
+        const relativePath = url.pathname.replace(/^\/?/, '');
+        if (!relativePath.startsWith(path)) continue;
+        const rest = relativePath.slice(path.length);
+        const parts = rest.split("/");
+        if (parts.length === 1 && parts[0] !== "") files.push(parts[0]);
+        else if (parts[0] !== "") folders.add(parts[0]);
+    }
+    return { folders: Array.from(folders), files };
+}
+
+async function readFile(path) {
+    const cache = await openCache();
+    const resp = await cache.match(path);
+    if (!resp) return null;
+    return await resp.text();
+}
+
+async function writeFile(path, content) {
+    const cache = await openCache();
+    await cache.put(path, new Response(content, { status: 200 }));
+}
+
+function getFileIcon(fileName, isFolder) {
+    if (isFolder) return "icons/file-icons/folder.png";
+
+    const ext = fileName.split(".").pop().toLowerCase();
+    const iconPath = `icons/file-icons/${ext}.png`;
+
+    const img = new Image();
+    img.src = iconPath;
+    img.onerror = () => img.src = "icons/file-icons/unknown.png";
+
+    return iconPath;
+}
+
+function renderBreadcrumb() { document.getElementById("breadcrumb").textContent = "Path: /" + currentPath; }
+
+async function renderExplorer() {
+    const { folders, files } = await listFiles(currentPath);
+    const fileList = document.getElementById("fileList");
+    fileList.innerHTML = "";
+
+    if (pathStack.length > 0 || currentPath !== "os/") {
+        const up = document.createElement("div");
+        up.className = "folder";
+        const img = document.createElement("img");
+        img.src = getFileIcon("", true);
+        up.appendChild(img);
+        up.appendChild(document.createTextNode(".."));
+        up.onclick = async () => {
+            if (pathStack.length > 0) {
+                currentPath = pathStack.pop();
+            } else {
+                const parts = currentPath.split("/").filter(p => p);
+                parts.pop();
+                currentPath = parts.length === 1 ? "os/" : parts.join("/") + "/";
+            }
+            renderBreadcrumb();
+            await renderExplorer();
+        };
+        fileList.appendChild(up);
+    }
+
+    folders.forEach(f => {
+        const div = document.createElement("div");
+        div.className = "folder";
+        const img = document.createElement("img");
+        img.src = getFileIcon(f, true);
+        div.appendChild(img);
+        div.appendChild(document.createTextNode(f));
+        div.onclick = async () => {
+            currentPath = currentPath + f + "/";
+            renderBreadcrumb();
+            await renderExplorer();
+        };
+        fileList.appendChild(div);
+    });
+
+    files.forEach(f => {
+        const div = document.createElement("div");
+        div.className = "file";
+        const img = document.createElement("img");
+        img.src = getFileIcon(f, false);
+        div.appendChild(img);
+        div.appendChild(document.createTextNode(f));
+
+        div.onclick = async () => {
+            const fileFullPath = currentPath + f;
+
+            // Handle .vink portal files
+            if (f.endsWith(".vink")) {
+                const content = await readFile(fileFullPath);
+                if (!content) return;
+                pathStack.push(currentPath);
+                currentPath = content.endsWith("/") ? content : content + "/";
+                renderBreadcrumb();
+                await renderExplorer();
+                return;
+            }
+
+            // Normal file behavior
+            const ta = document.getElementById("fileContent");
+            const content = await readFile(fileFullPath);
+            ta.value = content || "";
+            ta.style.display = "block";
+            ta.onblur = async () => await writeFile(fileFullPath, ta.value);
+            renderPreview(fileFullPath, f);
+        };
+
+        fileList.appendChild(div);
+    });
+}
+
+// --- Preview ---
+async function renderPreview(path, fileName) {
+    const preview = document.getElementById("previewArea");
+    preview.innerHTML = "";
+    const ext = fileName.split(".").pop().toLowerCase();
+    const cache = await openCache();
+    const response = await cache.match(path);
+    if (!response) {
+        preview.textContent = "No preview available.";
+        return;
+    }
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    if (["mp3", "wav", "ogg"].includes(ext)) {
+        const audio = document.createElement("audio");
+        audio.src = url;
+        audio.controls = true;
+        preview.appendChild(audio);
+    } else if (["mp4", "webm", "ogg"].includes(ext)) {
+        const video = document.createElement("video");
+        video.src = url;
+        video.controls = true;
+        preview.appendChild(video);
+    } else {
+        preview.textContent = "No preview available.";
+    }
+}
+
+// --- Auto-refresh OS cache if online ---
+async function refreshCacheFromServer() {
+    if (!navigator.onLine) return;
+
+    console.log("[FileExplorer] Online detected. Refreshing cache...");
+    const cache = await openCache();
+
+    // Example: list of main OS files to fetch from server
+    const osFiles = [
+        "os/readme.txt",
+        "os/config.json",
+        "os/song.mp3",
+        "os/video.mp4",
+        "os/apps.vink"
+    ];
+
+    for (let file of osFiles) {
+        try {
+            const resp = await fetch(file);
+            if (!resp.ok) continue;
+            await cache.put(file, resp.clone());
+            console.log(`[FileExplorer] Cached updated: ${file}`);
+        } catch (err) {
+            console.warn(`[FileExplorer] Failed to fetch ${file}:`, err);
+        }
+    }
+}
+
+// --- Initialize ---
+(async () => {
+    await refreshCacheFromServer(); // Auto-refresh cache if online
+
+    const cache = await openCache();
+    const keys = await cache.keys();
+    if (!keys.some(k => k.url.includes("/os/"))) {
+        await writeFile("os/readme.txt", "Welcome to WebTop OS!\nThis is a virtual file system using Cache API.");
+        await writeFile("os/config.json", '{"theme":"dark"}');
+        await writeFile("os/song.mp3", "");
+        await writeFile("os/video.mp4", "");
+        await writeFile("os/apps.vink", "/applications");
+    }
+
+    renderBreadcrumb();
+    await renderExplorer();
+})();
+
+</script>
+
+</body>
+</html>

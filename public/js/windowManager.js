@@ -18,7 +18,8 @@ export class WindowManager {
     windowEl.style.height = `${height}px`;
     windowEl.style.left = `${x}px`;
     windowEl.style.top = `${y}px`;
-
+    const windowCreationAudio = new Audio('./os/sound/deck_ui_show_modal.wav');
+    windowCreationAudio.play();
     const header = window.parent.document.createElement('div');
     header.className = 'window-header';
 
@@ -180,6 +181,8 @@ export class WindowManager {
     win.element.style.display = 'none';
     win.isMinimized = true;
     win.taskButton.classList.remove('active');
+    const windowMinimizeAudio = new Audio('./os/sound/deck_ui_side_menu_fly_out.wav');
+    windowMinimizeAudio.play();
   }
 
 shadeWindow(id) {
@@ -212,12 +215,16 @@ shadeWindow(id) {
     win.element.style.display = 'flex';
     win.isMinimized = false;
     this.activateWindow(id);
+    const windowMinimizeAudio = new Audio('./os/sound/deck_ui_side_menu_fly_in.wav');
+    windowMinimizeAudio.play();
   }
 
   maximizeWindow(id) {
     const win = this.windows.get(id);
     const isMaximized = win.element.style.width === '100vw';
     const root = document.documentElement; 
+    const windowMaximizeAudio = new Audio('./os/sound/deck_ui_into_game_detail.wav');
+    windowMaximizeAudio.play();
     if (isMaximized) {
       win.element.style.width = win.prevWidth || '400px';
       win.element.style.height = win.prevHeight || '300px';
@@ -242,6 +249,8 @@ shadeWindow(id) {
     const win = this.windows.get(id);
     //append closing to class
     win.element.classList.add('closing');
+    const windowCloseAudio = new Audio('./os/sound/deck_ui_hide_modal.wav');
+    windowCloseAudio.play();
     setTimeout(() => {
       win.element.remove();
       win.taskButton.remove();

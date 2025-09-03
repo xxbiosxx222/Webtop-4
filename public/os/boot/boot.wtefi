@@ -19,7 +19,7 @@ $p: */term.png
 $p: */wtc.svg | ptype:svg | Filename: webtop code
 
 # Preload Controls
-
+ 
 $p: */controls/close.svg | ptype:svg
 $p: */controls/maximize-1.svg | ptype:svg
 $p: */controls/maximize-2.svg | ptype:svg

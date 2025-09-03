@@ -1,0 +1,6 @@
+novaMData {
+    appName: "TestApp",
+    version: "1.0"
+ }
+require "echo"
+echo "hello world!"
