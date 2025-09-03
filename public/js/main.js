@@ -10,6 +10,8 @@ const windowManager = new WindowManager();
 const startMenu = startMenuManager();
 clockManager();
 
+
+
 window.addEventListener("DOMContentLoaded", () => {
 
 
