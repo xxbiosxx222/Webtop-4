@@ -38,17 +38,19 @@
   display: inline-block;           /* behaves more like a button */
   color: white;                    /* text color */
   text-decoration: none;           /* remove underline */
-  padding: 12px 25px;              /* more padding, wider like a button */
-  background-color: #00BEAF;       /* solid button color */
-  border-radius: 8px;              /* subtle rounded corners */
+  padding: 12px 25px;    
+  background-color: black;          /* more padding, wider like a button */         /* subtle rounded corners */
+  border-radius: 30px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* shadow for 3D effect */
   transition: 0.3s;                /* smooth hover animation */
   font-weight: bold;               /* button text bold */
   text-align: center;              /* center text */
+  margin-bottom: 20px;
+  
 }
 
 .sidebar a:hover {
-  background-color: #00A88F;       /* darker on hover */
+  background-color: #858585;       /* darker on hover */
   transform: translateY(-2px);     /* slight lift effect */
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25); /* deeper shadow on hover */
 }
@@ -226,6 +228,25 @@ select {
         filter: opacity(100%);
     }
 }
+   .swatches {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .swatch {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid white;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .swatch:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+    }
   </style>
 </head>
 
@@ -264,8 +285,6 @@ select {
     </div>
     <div class="main-content">
       <h1>Welcome</h1>
-      <p>This is a WIP settings application for Webtop.</p>
-
       <div id="wallpaper-tab">
         <p>You can use this to change your wallpaper.</p>
         <div class="image-grid">
@@ -279,7 +298,19 @@ select {
       </div>
 
       <div id="accent-tab" style="display:none">
-        <p>Accent colour settings will be shown here when I add them.</p>
+      <p>Select an accent colour:</p>
+
+        <div class="swatches">
+          <div class="swatch" data-colour="#1e1e1e" style="background:#1e1e1e"></div>
+          <div class="swatch" data-colour="#ff4757" style="background:#ff4757"></div>
+          <div class="swatch" data-colour="#1e90ff" style="background:#1e90ff"></div>
+          <div class="swatch" data-colour="#2ed573" style="background:#2ed573"></div>
+          <div class="swatch" data-colour="#ffa502" style="background:#ffa502"></div>
+          <div class="swatch" data-colour="#9c88ff" style="background:#9c88ff"></div>
+        </div>
+
+        <p>Or pick a custom colour:</p>
+        <input type="color" id="customColour" value="#ff4757" />
       </div>
       <div id="security-tab" style="display:none">
         <span style="color: red;">
@@ -316,6 +347,32 @@ select {
             tabs[tabName].style.display = 'block';
           }
         });
+      });
+           function hexToRgba(hex, alpha = 0.6) {
+        hex = hex.replace('#', '');
+        let r = parseInt(hex.substring(0, 2), 16);
+        let g = parseInt(hex.substring(2, 4), 16);
+        let b = parseInt(hex.substring(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      }
+
+      function applyAccent(colour) {
+        localStorage.setItem("accent_color",hexToRgba(colour, 0.6));
+        const taskbar = window.parent.document.getElementById('taskbar');
+        if (taskbar) {
+          taskbar.style.background = hexToRgba(colour, 0.6);
+        }
+      }
+
+      document.querySelectorAll('.swatch').forEach(swatch => {
+        swatch.addEventListener('click', () => {
+          const colour = swatch.dataset.colour;
+          applyAccent(colour);
+        });
+      });
+
+      document.getElementById('customColour').addEventListener('input', (e) => {
+        applyAccent(e.target.value);
       });
       // preload the sound
 const typingSound = new Audio('../os/sound/deck_ui_typing.wav');
@@ -355,6 +412,7 @@ function attachTypingSound(inputSelector) {
           const targetDiv = window.parent.document.getElementById('desktop');
           if (targetDiv) {
             toaster.show("Wallpaper changed!", { type: "info" });
+            localStorage.setItem("background",bgUrl);
             targetDiv.style.backgroundImage = bgUrl;
           }
         });

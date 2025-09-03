@@ -50,8 +50,12 @@
       </button>
       <img src="WebTop4.png"  id="str"alt="Start Button" width="30">
 
-      <input type="text" id="taskbar-input" class="taskbar-input" placeholder="Search...">
+      <div class="search-container">
+                <input type="text" class="search" placeholder="Type here to search" id="taskbar-input">
+                <img src="icons/search.png" class="search-icon" alt="search icon">
+      </div>
       <button id="search-button">Go</button>
+      <div class="vertical-divider"></div>
       <div id="task-list"></div>
       <div id="system-tray">
         <span id="clock"></span>
@@ -101,9 +105,13 @@
      <h1>Loading Webtop 4</h1>
      <br>
      <progress id="load-progress" value="50" max="100">50%</progress>
+     
      <div class="logger">
         <p id="log-text">Initializing...</p>
+        
      </div>
+     <h2>Asset Download progress</h2>
+      <progress id="download-progress" value="50" max="100"></progress>
     </div>
     <div id="wt9-lock" class="wt9-panel" style="display:none;">
 

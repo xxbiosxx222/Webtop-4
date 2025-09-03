@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Webtop Update</title>
+<style>
+  :root { --accent-color: #4cafef; }
+
+  /* FULLSCREEN TRANSPARENT LAYER (so Webtop Liquid Glass shows) */
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: transparent;   /* IMPORTANT: transparent so Liquid Glass is visible */
+    color: white;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+
+  /* Overlay that covers entire viewport */
+  .setup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* allow pointer events; user interacts with overlay */
+  }
+
+  /* subtle backdrop (the real glass is provided by Webtop; we just nudge it) */
+  .setup-card {
+    width: 640px;
+    max-width: calc(100% - 48px);
+    border-radius: 14px;
+    padding: 28px;
+    box-sizing: border-box;
+    height: fit-content;
+    /* keep the overlay visually readable but transparent enough for Liquid Glass underlay */
+    background: rgb(0, 0, 0);
+    backdrop-filter: blur(10px) saturate(1.1);
+    -webkit-backdrop-filter: blur(10px) saturate(1.1);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 8px;
+  }
+  header img { width: 40px; height: auto; }
+  h1 { font-size: 20px; margin: 0; font-weight: 600; letter-spacing: -0.2px; }
+
+  p.lead { margin: 8px 0 18px; color: rgba(255,255,255,0.85); }
+
+  /* STEPS LAYOUT */
+  .steps {
+    position: relative;
+    min-height: 220px;
+  }
+
+  .step {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateY(14px) scale(0.995);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ACTIVE step uses enter animation (CSS keyframes only) */
+  .step.active {
+    pointer-events: auto;
+    animation: stepIn 360ms cubic-bezier(.2,.9,.2,1) both;
+  }
+
+  /* When we add .prev to the outgoing step we trigger exit animation */
+  .step.prev {
+    pointer-events: none;
+    animation: stepOut 260ms cubic-bezier(.4,.0,.2,1) both;
+  }
+
+  /* keyframes: enter (slide up + fade) */
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(14px) scale(0.995); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* keyframes: exit (slide down + fade out) */
+  @keyframes stepOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(16px) scale(0.995); }
+  }
+
+  /* IMAGE GRID + ACCENT SWATCHES */
+  .image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
+    gap: 12px;
+  }
+  .image-grid img {
+    width: 100%;
+    height: 84px;
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .image-grid img:hover { transform: translateY(-4px); box-shadow: 0 8px 18px rgba(0,0,0,0.6); }
+
+  .accent-preview { display:flex; gap:10px; margin-top:12px; align-items:center; }
+  .accent-box {
+    width: 44px; height: 44px; border-radius:10px; cursor:pointer; border:2px solid transparent;
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .accent-box:hover { transform: scale(1.06); border-color: rgba(255,255,255,0.12); }
+
+  /* CONTROL ROW */
+  .controls {
+    display:flex;
+    gap:12px;
+    justify-content: flex-end;
+    margin-top: 18px;
+  }
+
+  .btn {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    background: rgba(255,255,255,0.06);
+    color: white;
+    min-width: 96px;
+  }
+  .btn.primary {
+    background: var(--accent-color);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  }
+  .btn.ghost { background: transparent; border: 1px solid rgba(255,255,255,0.06); }
+
+  /* small responsive tweaks */
+  @media (max-width:520px){
+    .setup-card { padding: 18px; border-radius: 12px; }
+    .image-grid img { height: 72px; }
+  }
+</style>
+</head>
+<body>
+  <div class="setup-overlay" role="dialog" aria-modal="true" aria-label="Webtop Setup">
+    <div class="setup-card" id="setupCard" aria-live="polite">
+      <header>
+        <img src="../WebTop4.png" alt="Webtop">
+        <div>
+          <h1>Webtop Update Logs</h1>
+          <div style="font-size:13px; color:rgba(255,255,255,0.7)">Automatic Update logs</div>
+        </div>
+      </header>
+
+  
+      <div class="steps" id="steps">
+        <!-- Step 1 -->
+        <div class="step active" id="step-1">
+          <div>
+            <strong>Webtop has updated!</strong>
+            <p style="margin:8px 0 0; color:rgba(255,255,255,0.85)">Looks like your webtop has updated lets review some update notes</p>
+          </div>
+          <div style="flex:1"></div>
+          <div class="controls">
+        
+            <button class="btn primary" data-next="2">Start</button>
+          </div>
+        </div>
+        <div class="step" id="step-2">
+          <div>
+            <strong>Major Additions</strong>
+          </div>
+          <div style="flex:1">
+            <ul>
+                <li>Improved Accents</li>
+                <li>Nova Scripting</li>
+            </ul>
+          </div>
+          <div class="controls">
+        
+            <button class="btn primary" data-next="3">Next</button>
+          </div>
+        </div>
+        <div class="step" id="step-3">
+          <div>
+            <strong>Fixes</strong>
+          </div>
+          <div style="flex:1">
+            <ul>
+                <li>Fixed Padding Issue on window content</li>
+                <li>Accents and wallpapers will now save</li>
+                <li>Fixed the ugly buttons in settings</li>
+                <li>the settings button now fits in</li>
+                <li>Search bar is now more alive and animated</li>
+                <li>Added Secrets</li>
+            </ul>
+          </div>
+          <div class="controls">
+        
+            <button class="btn primary" data-next="4">Next</button>
+          </div>
+        </div>
+     <div class="step" id="step-4">
+          <div>
+            <strong>Minor Additions</strong>
+          </div>
+          <div style="flex:1">
+            <ul>
+                <li>Asset count is now at 283</li>
+                <li>Fixed some file explorer bugs</li>
+                <li>Changed keybinds on doom</li>
+                <li>Patch notes will only appear once every update</li>
+                <li>Setup now only appears once</li>
+            </ul>
+          </div>
+          <div class="controls">
+        
+          </div>
+        </div>
+      </div>
+    </div>
+
+  
+   
+
+
+<script>
+/*
+  JS does three things only:
+   - toggles .active / .prev classes to let CSS animate enter/exit
+   - previews wallpaper/accent to parent #desktop and :root var
+   - saves to localStorage on finish
+
+  Animations themselves are pure CSS (keyframes).
+*/
+
+(function () {
+  const steps = Array.from(document.querySelectorAll('.step'));
+  let current = 0;
+
+  function showStep(index) {
+    if (index === current) return;
+    const outgoing = steps[current];
+    const incoming = steps[index];
+
+    // mark outgoing to play exit animation
+    outgoing.classList.remove('active');
+    outgoing.classList.add('prev');
+
+    // when outgoing animation ends, clean up .prev
+    const cleanup = (ev) => {
+      outgoing.classList.remove('prev');
+      outgoing.removeEventListener('animationend', cleanup);
+    };
+    outgoing.addEventListener('animationend', cleanup);
+
+    // activate incoming (CSS handles enter anim)
+    incoming.classList.add('active');
+    incoming.scrollTop = 0;
+    current = index;
+  }
+
+  // wired data-next and data-prev buttons
+  document.querySelectorAll('[data-next]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-next'), 10) - 1;
+      if (!isNaN(idx)) showStep(idx);
+    });
+  });
+  document.querySelectorAll('[data-prev]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-prev'), 10) - 1;
+      if (!isNaN(idx)) showStep(idx);
+    });
+  });
+
+
+  // finish/apply
+  
+
+  // auto-apply saved settings on load (preview)
+  
+})();
+</script>
+
+<script src="https://kit.fontawesome.com/16f6b70bf6.js" crossorigin="anonymous"></script>
+</body>
+</html>

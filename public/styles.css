@@ -135,24 +135,85 @@ progress::-webkit-progress-value {
 }
 
 /* search box blends into dock */
-.taskbar-input {
-  height: 36px;
-  border-radius: 10px;
-  border: none;
-  padding: 0 10px;
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  min-width: 140px;
-}
 
+   .search-container {
+            position: relative;
+            display: inline-block;
+            
+        }
+        .searchbar-container {
+            overflow: hidden;
+        }
+ .search {
+            /* clip the content */
+            overflow: hidden;
+            width: 300px;
+            height: 40px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 16px;
+            text-align: left;
+            line-height: 40px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: rgb(67, 67, 67);
+            padding-left: 10px;
+            transition: all 0.3s ease ;
+        }
+        
+        .search:focus {
+            outline: none;
+            border-color: #0078D7;
+            background-color: #1e1e1e;
+            color: white;
+            box-shadow: 0 0 5px rgba(0, 120, 215, 0.5);
+            width: 350px;
+            padding-left: 40px;
+            transition: all 0.3s ease ;
+        }
+        .search-icon {
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%) translateX(-30px) scale(0);
+            width: 30px;
+            height: 30px;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+        }
+        .search:focus ~ .search-icon {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0) scale(0.7);
+        }
 #search-button {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  padding: 0 12px;
-  color: #fff;
+  width: 90px;
+  height: 40px;
+  border: none;
+  outline: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
+#search-button:hover {
+  transform: scale(1.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+#search-button:active {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) inset;
+}
+.vertical-divider {
+  width: 1px; /* Adjust thickness as needed */
+  background-color: #ccc; /* Set desired color */
+  height: 100%; /* Set desired height, or use a percentage */
+  margin: 0 10px; /* Add horizontal spacing */
+}
 .logger {
   bottom: 100px;
   left: 10px;
@@ -187,13 +248,18 @@ progress::-webkit-progress-value {
 #settings {
   display: flex;
   align-items: center;
-  background: transparent;
-  border: none;
+
   color: #fff;
-  padding: 0 10px;
+  width: 80px;
+  height: 40px;
   cursor: pointer;
-  height: var(--taskbar-height);
-  width: 40px;
+  border: none;
+  outline: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 #settings:hover {
@@ -211,7 +277,7 @@ progress::-webkit-progress-value {
 }
 
 #task-list button {
-  width: 40px;
+  width: 90px;
   height: 40px;
   border: none;
   outline: none;
@@ -309,8 +375,11 @@ progress::-webkit-progress-value {
 
 .window-content {
   flex: 1;
+  padding: 0 0;
   overflow: auto;
   color: #fff;
+  width: 100%;
+  height: 100%;
 }
 
 .window.closing {
@@ -347,13 +416,6 @@ progress::-webkit-progress-value {
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     align-items: center;
-}
-
-.window-content {
-    padding: 20px;
-    color: #fff;
-    font-size: 14px;
-    overflow: auto;
 }
 
 
@@ -421,7 +483,8 @@ progress::-webkit-progress-value {
 }
 
 .task-button {
-  padding: 5px 10px;
+  height:10px;
+  width: 20px;
   background: transparent;
   border: none;
   color: #fff;
@@ -443,17 +506,6 @@ progress::-webkit-progress-value {
   transition: all 0.2s ease-in-out;
 }
 
-
-.taskbar-input::placeholder {
-  color: #aaa;
-}
-
-.taskbar-input:focus {
-  border-color: #888;
-  background: rgba(60, 60, 60, 0.95);
-  max-width: 250px;
-  transition: all 0.2s ease-in-out;
-}
 
 #desktop-icons {
   position: absolute;

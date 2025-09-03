@@ -3,6 +3,7 @@ import { startMenuManager } from './startMenuManager.js';
 import { clockManager } from './clockManager.js';
 import { ContentLoader } from './content-loader.js';
 
+const OSVersion = "4 (1.2)";
 
 import Toasty from './Toasty.js';
 window.toasty = new Toasty("top-right", { basePath: "./" });
@@ -20,11 +21,25 @@ window.addEventListener("DOMContentLoaded", () => {
   const setupEl = document.getElementById("setup-screen");
   const lockEl = document.getElementById("wt9-lock");
   const desktopEl = document.getElementById("desktop");
-  
-  const loader = new ContentLoader("webtop-cache-v1", progressEl, logEl, setupEl, lockEl, desktopEl);
+  const downloadEl = document.getElementById("download-progress");
+  const loader = new ContentLoader("webtop-cache-v1", progressEl, logEl, setupEl, lockEl, desktopEl,downloadEl);
   loader.loadAssets("/assets.json");
 });
 
+
+
+if (localStorage.getItem("background")) {
+      const targetDiv = window.parent.document.getElementById('desktop');
+          if (targetDiv) {
+            targetDiv.style.backgroundImage = localStorage.getItem("background");
+          }
+}
+if (localStorage.getItem("accent_color")) {
+        const taskbar = window.parent.document.getElementById('taskbar');
+        if (taskbar) {
+          taskbar.style.background = localStorage.getItem("accent_color");
+        }
+}
  window.addEventListener("message", (event) => {
             if (event.data?.type === "toast" && typeof event.data.line === "string" && typeof event.data.type === "string") {
                 window.toasty.show(event.data.line,{type: event.data.type})
@@ -66,7 +81,9 @@ document.getElementById('search-button').addEventListener('click', () => {
   }
 });
 
- windowManager.createWindow({
+if (!localStorage.getItem("setup"))
+{
+   windowManager.createWindow({
   title: 'Setup',
   icon: './WebTop4.png',
   content: `<iframe src="./applications/setup.html" width="100%" height="100%" style="border:none;"></iframe>`,
@@ -75,6 +92,23 @@ document.getElementById('search-button').addEventListener('click', () => {
   width: 800,
   height: 600
 });
+localStorage.setItem("setup",true);
+}
+
+if (!localStorage.getItem("viewedNotesForWebtop"+OSVersion))
+{
+   windowManager.createWindow({
+  title: 'Patch Notes for Webtop '+OSVersion,
+  icon: './WebTop4.png',
+  content: `<iframe src="./applications/update-notes.html" width="100%" height="100%" style="border:none;"></iframe>`,
+  x: 200,
+  y: 100,
+  width: 800,
+  height: 600
+});
+localStorage.setItem("viewedNotesForWebtop"+OSVersion,true)
+}
+
 
 window.addEventListener("message", (event) => {
   if (event.data?.type === "term") {
