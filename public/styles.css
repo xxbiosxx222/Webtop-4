@@ -44,7 +44,7 @@ body {
 
 #desktop {
   width: 100vw;
-  height: 100vh;
+  height: 100vh; 
   background-image: url("./backgrounds/borealis2.png") ;
   background-size: cover;
   background-position: center;
@@ -111,6 +111,7 @@ progress::-webkit-progress-value {
   backdrop-filter: url(#glass-distortion);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
+
 
 /* dock icons */
 #taskbar button svg,
@@ -296,6 +297,36 @@ progress::-webkit-progress-value {
   object-fit: contain;
   pointer-events: none;
 }
+.battery-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.battery-icon i {
+  font-size: 32px;
+}
+
+#batt-full i {
+  color: #04ff00; /* green */
+}
+
+#batt-3quart i {
+  color: #fbff00; /* yellow */
+}
+
+#batt-half i {
+  color: #ff9500; /* orange */
+}
+
+#batt-quarter i {
+  color: #ff0000; /* red */
+}
+
+#battery-text {
+  color: white;
+  font-weight: bold;
+}
 
 #task-list button:hover {
   transform: scale(1.3);
@@ -418,6 +449,40 @@ progress::-webkit-progress-value {
     align-items: center;
 }
 
+.wt4-sign-in {
+  flex: 1;
+      width: 100vw;
+    height: 100vh;
+    position: fixed; 
+    background-image: url("./backgrounds/borealis2.png") ;
+  background-size: cover;
+  background-position: center;
+  color: white;
+  justify-content: center;
+  text-align: center;
+  z-index: 99999;
+}
+
+.wt4-sign-in button {
+      margin: 0 auto;
+  background: rgba(0, 0, 0, 0.247);
+  backdrop-filter: blur(10px);
+  width: 150px;
+  height: 50px;
+  border: 10px;
+
+   color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  align-items: center;
+  gap: 5px;
+    transform: scale(1);
+  transition: all 0.2s ease-in-out;
+}
+.wt4-sign-in button:active {
+  transform: scale(0.8);
+  transition: all 0.2s ease-in-out;
+}
 
 #start-menu {
   position: fixed;

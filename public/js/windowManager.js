@@ -85,7 +85,6 @@ export class WindowManager {
 
     return id;
   }
-
   setupWindowEvents(id, windowEl, header) {
     let mouseDown = false;
     let clickDifferenceX = 0;

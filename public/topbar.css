@@ -1,0 +1,76 @@
+ :root {
+    --fg: #e8ecf1;
+    --muted: #a9b3c0;
+    --bg: #0e1420;
+    --chip: #151d2c;
+    --gap: 12px;
+  }
+
+  /* Topbar */
+  #topbar {
+  position: fixed;
+  top: 12px;             /* slight breathing room from screen top */
+  left: 0;
+  right: 0;
+  width: fit-content;    /* shrink-wrap to content */
+  margin: auto;
+  
+  height: 72px;
+  padding: 0 18px;
+  
+  background: rgba(50, 50, 50, 0.24);
+  backdrop-filter: url(#glass-distortion); /* your SVG filter */
+  -webkit-backdrop-filter: blur(20px);     /* fallback for Safari */
+
+  border-radius: 36px;   /* full pill look */
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  
+  z-index: 1000;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.topbar-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 16px;
+}
+.topbar-section i {
+  font-size: 24px;
+}
+
+  .deck { display: flex; align-items: center; gap: var(--gap); }
+
+  .chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px; border-radius: 10px;
+    background: var(--chip);
+    border: 1px solid rgba(255,255,255,.06);
+    min-height: 32px;
+  }
+
+  .chip i { font-size: 16px; color: var(--muted); }
+  .chip .value { font-weight: 600; letter-spacing: .2px; }
+  .chip .sub { font-size: 12px; color: var(--muted); }
+
+  /* Battery icons */
+  .battery-icon { display: none; }
+  .battery-icon i { font-size: 18px; }
+
+  #batt-full i { color: #05e062; }
+  #batt-3quart i { color: #f2dd3a; }
+  #batt-half i { color: #ff9a2a; }
+  #batt-quarter i { color: #ff3b30; }
+
+  /* Weather icon sizing */
+  #weather-icon { font-size: 18px; }
+
+  /* Tiny helper for separators on wide screens */
+  .sep { width: 1px; height: 22px; background: rgba(255,255,255,.08); }
+
+  @media (max-width: 640px) {
+    .hide-sm { display: none !important; }
+  }

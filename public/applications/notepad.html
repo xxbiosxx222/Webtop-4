@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Notepad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 500px;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            resize: vertical;
+        }
+        .controls {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simple Notepad</h1>
+        <textarea id="editor"></textarea>
+        <div class="controls">
+            <button id="saveButton">Save File</button>
+            <span id="status"></span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editor = document.getElementById('editor');
+            const saveButton = document.getElementById('saveButton');
+            const statusSpan = document.getElementById('status');
+            const urlParams = new URLSearchParams(window.location.search);
+            const fileName = urlParams.get('file');
+
+            // Function to load the file
+            const loadFile = async (name) => {
+                if (!name) return;
+
+                statusSpan.textContent = `Loading ${name}...`;
+                try {
+                    const response = await fetch(name);
+                    if (!response.ok) {
+                        throw new Error(`Error loading file: ${response.statusText}`);
+                    }
+                    const content = await response.text();
+                    editor.value = content;
+                    statusSpan.textContent = `${name} loaded successfully.`;
+                } catch (error) {
+                    console.error('Error fetching file:', error);
+                    statusSpan.textContent = `Error: Could not load ${name}.`;
+                }
+            };
+
+            // Load file on page load if parameter exists
+            if (fileName) {
+                loadFile(fileName);
+            }
+
+            // Function to save the file
+            saveButton.addEventListener('click', () => {
+                const textContent = editor.value;
+                const blob = new Blob([textContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                
+                // If a file was loaded, use its name; otherwise, default
+                a.download = fileName || 'note.txt';
+                
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                statusSpan.textContent = 'File saved to your computer!';
+            });
+        });
+    </script>
+</body>
+</html>

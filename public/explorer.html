@@ -95,6 +95,7 @@ async function renderExplorer() {
         up.appendChild(img);
         up.appendChild(document.createTextNode(".."));
         up.onclick = async () => {
+
             if (pathStack.length > 0) {
                 currentPath = pathStack.pop();
             } else {
@@ -144,7 +145,24 @@ async function renderExplorer() {
                 await renderExplorer();
                 return;
             }
-
+            if (f.endsWith("html")) {
+                window.parent.postMessage({filetype:"html",filelocation: fileFullPath})
+            }
+            if (f.endsWith("png")) {
+                window.parent.postMessage({filetype:"png",filelocation: fileFullPath})
+            }
+            if (f.endsWith("wtefi")) {
+                window.parent.postMessage({filetype:"wtefi",filelocation: fileFullPath})
+            }
+            else {
+                if(f.endsWith("png") || f.endsWith("ogg") || f.endsWith("wav") || f.endsWith("mp3") || f.endsWith("mp4")) {
+                    
+                
+                }
+                else{
+                    window.parent.postMessage({filetype:"",filelocation: fileFullPath})
+                }
+            }
             // Normal file behavior
             const ta = document.getElementById("fileContent");
             const content = await readFile(fileFullPath);

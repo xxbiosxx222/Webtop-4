@@ -137,13 +137,7 @@ export class ContentLoader {
       const pin = localStorage.getItem('webtop-pin');
 
       if (username) {
-        if (pin) {
-          // username + pin → show lock screen
-          this.initLockScreen();
-        } else {
-          // username only → skip lock, go straight to desktop
-          this.showDesktop();
-        }
+        this.initSignin()
       } else {
         // first-time → setup wizard
         this.setupEl.classList.add('fade-in');
@@ -154,6 +148,26 @@ export class ContentLoader {
   }
 
 
+  initSignin() {
+    const Signin = document.getElementById("signin-screen");
+    Signin.style.display = "block";
+    document.getElementById("loader-screen").style.display = "none";
+    const username = document.getElementById("signin-username");
+    const signinbtn = document.getElementById("sign-in-btn");
+    Signin.classList.add('wt9-panel-loadfade');
+        this.desktopEl.style.display = 'flex';
+    username.innerText = localStorage.getItem("webtop-username")
+    signinbtn.addEventListener("click", () => {
+      Signin.style.display = "none";
+      if (localStorage.getItem("webtop-pin")) {
+          // username + pin → show lock screen
+          this.initLockScreen();
+        } else {
+          // username only → skip lock, go straight to desktop
+          this.showDesktop();
+        }
+    })
+  }
   // ------------------- Setup Wizard -------------------
   initSetupWizard() {
     const steps = Array.from(this.setupEl.querySelectorAll(".step"));

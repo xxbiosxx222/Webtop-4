@@ -192,6 +192,7 @@ select {
     display: none;
     background-color: black;
     filter: opacity(100%);
+    z-index: 999999;
 }
 
 .wt9-panel-fadeout {

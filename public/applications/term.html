@@ -91,11 +91,25 @@
         };
 
         const commands = {
-            help: "Available commands: help, about, weofetch, clear",
+            help: "Available commands: help, about, weofetch, clear, explorer,settings,wasmdoom",
             about: "Webtop Terminal v0.2",
             clear: () => {
                 terminal.innerHTML = '';
             },
+            explorer: () => {
+                 window.parent.postMessage({filetype:"global_application",windowtitle:"Nova File Explorer",location:"./explorer.html"})
+                 return `Opening Explorer`
+            },
+            settings: () => {
+                 window.parent.postMessage({filetype:"global_application",windowtitle:"Settings",location:"./applications/settings.html"})
+                 return `Opening settings`
+            },
+            wasmdoom: () => {
+                window.parent.postMessage({filetype:"global_application",windowtitle:"Doom",location:"./applications/doom"})
+        
+
+                return `Blood.`
+            } ,
             weofetch: () => {
                 return `       ___ 
  \\    / |  

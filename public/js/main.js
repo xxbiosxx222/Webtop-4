@@ -7,11 +7,70 @@ const OSVersion = "4 (1.2)";
 
 import Toasty from './Toasty.js';
 window.toasty = new Toasty("top-right", { basePath: "./" });
+
 const windowManager = new WindowManager();
 const startMenu = startMenuManager();
+window.winmgr = windowManager;
 clockManager();
 
+//Explorer open window
 
+    window.addEventListener('message', receiveMessage, false);
+
+    function receiveMessage(event) {
+        // Important: Check the origin of the message sender for security
+
+        const receivedData = event.data; // The message data
+        if (receivedData.filetype == "html")
+        {
+             windowManager.createWindow({
+            title: 'Nova File Explorer Html Webview',
+            icon: './icons/file-icons/html.png',
+            content: `<iframe src="`+receivedData.filelocation+`" width="100%" height="100%" style="border:none;"></iframe>`,
+            x: 100,
+            y: 100,
+            width: 800,
+            height: 600
+            });
+          }
+        else if (receivedData.filetype == "png") {
+            windowManager.createWindow({
+            title: 'Preview',
+            icon: './icons/file-icons/png.png',
+            content: `<img src="`+receivedData.filelocation+`">`,
+            x: 100,
+            y: 100,
+            width: 800,
+            height: 600
+            });
+        }
+        else if (receivedData.filetype == "global_application") {
+            windowManager.createWindow({
+            title: receivedData.windowtitle,
+            icon: './icons/file-icons/html.png',
+            content: `<iframe src="`+receivedData.location+`" width="100%" height="100%" style="border:none;"></iframe>`,
+            x: 100,
+            y: 100,
+            width: 800,
+            height: 600
+            });
+            
+        }
+        else if (receivedData.filelocation) {
+            windowManager.createWindow({
+            title: 'notepad',
+            icon: './icons/file-icons/png.png',
+            content: '<iframe src="./applications/notepad.html?file=../'+receivedData.filelocation+'" width="100%" height="100%" style="border:none;"></iframe>',
+            x: 100,
+            y: 100,
+            width: 800,
+            height: 600
+            });
+            
+        }
+        
+        // Process the receivedData
+    }
 
 window.addEventListener("DOMContentLoaded", () => {
 
@@ -23,10 +82,71 @@ window.addEventListener("DOMContentLoaded", () => {
   const desktopEl = document.getElementById("desktop");
   const downloadEl = document.getElementById("download-progress");
   const loader = new ContentLoader("webtop-cache-v1", progressEl, logEl, setupEl, lockEl, desktopEl,downloadEl);
-  loader.loadAssets("/assets.json");
+  //loader.loadAssets("/assets.json");
+  
 });
 
 
+function updateBatteryUI(level, charging) {
+  const percent = Math.round(level * 100);
+  const textEl = document.getElementById("battery-text");
+
+  // update text
+  textEl.textContent = percent + "%";
+
+  // hide all battery icons first
+  document.querySelectorAll(".battery-icon").forEach(icon => {
+    icon.style.display = "none";
+  });
+
+  // show correct icon based on percent zones
+  if (percent >= 76 && percent <= 100) {
+    document.getElementById("batt-full").style.display = "block";
+  } else if (percent >= 51 && percent <= 75) {
+    document.getElementById("batt-3quart").style.display = "block";
+  } else if (percent >= 26 && percent <= 50) {
+    document.getElementById("batt-half").style.display = "block";
+  } else if (percent >= 0 && percent <= 25) {
+    document.getElementById("batt-quarter").style.display = "block";
+  }
+
+  // add ⚡ if charging
+  if (charging) {
+    textEl.textContent += " ⚡";
+  }
+}
+
+window.addEventListener("offline", (e) => {
+  document.getElementById("net-text").innerText = "Offline";
+});
+
+window.addEventListener("online", (e) => {
+document.getElementById("net-text").innerText = "Online";
+});
+
+// Try to use the Battery API
+if ("getBattery" in navigator) {
+  navigator.getBattery().then(battery => {
+    // initial update
+    updateBatteryUI(battery.level, battery.charging);
+
+    // update on changes
+    battery.addEventListener("levelchange", () => {
+      updateBatteryUI(battery.level, battery.charging);
+    });
+    battery.addEventListener("chargingchange", () => {
+      updateBatteryUI(battery.level, battery.charging);
+    });
+  });
+} else {
+  // fallback demo (simulate battery drain)
+  let fakeLevel = 1.0;
+  setInterval(() => {
+    fakeLevel -= 0.05;
+    if (fakeLevel < 0) fakeLevel = 1.0;
+    updateBatteryUI(fakeLevel, false);
+  }, 3000);
+}
 
 if (localStorage.getItem("background")) {
       const targetDiv = window.parent.document.getElementById('desktop');
@@ -66,18 +186,98 @@ window.getAccent = function(rgbaInput) {
 
   return `rgba(${rgb}, ${alpha})`;
 };
+function openPopup(url, windowName, features) {
+  window.open(url, windowName, features);
+}
+
 
 document.getElementById('search-button').addEventListener('click', () => {
   const query = document.getElementById('taskbar-input').value;
-  if (query) {
+
+  if (query.includes("webtop://")) {
+    //Webtop Links
+    const wturl = "webtop://"
+    var wtcontent = ""
+    if (query == wturl+"tw-extension") {
+      wtcontent = `<iframe src="./applications/wttw.html" width="100%" height="100%" style="border:none;"></iframe>`
+        
+
+    }
+    else if (query == wturl+"america") {
+      wtcontent = `
+      <style>
+      .window-content {
+      background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9DMNTPDfZu9sDvTYHXmKf4tqe68I4ZHON6A&s")
+      }
+      .bounds {
+  border: 5px red solid;
+  width: 200px;
+  height: 300px;
+}
+
+@keyframes hor-movement {
+  from {
+    margin-left: 0%;
+  }
+  to {
+    margin-left: 100%;
+  }
+}
+
+@keyframes ver-movement {
+  from {
+    margin-top: 0%;
+  }
+  to {
+    margin-top: 100%;
+  }
+}
+
+.eagleimage {
+  animation-name: hor-movement, ver-movement;
+  animation-duration: 3.141s, 1.414s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: linear;
+}
+      </style>
+      <img class="eagleimage" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2tPmjRPauwDUb-vBjy909E7n-k5Ni9TdwyQ&s">
+
+      <audio src="https://nationalanthems.info/wp-content/plugins/mp3-jplayer/download.php?mp3=loc%2Fus.mp3&pID=0" autoplay></audio>
+      `
+    }
+    else if (query == wturl+"webtop-urls") {
+      wtcontent = `
+      <ul>
+       <li>${wturl}tw-extension</li>
+       <li>${wturl}webtop-urls</li>
+       <li>${wturl}america</li>
+      </ul>
+      `
+    }
+    else {
+      wtcontent = `<h1>404</h1>`
+    }
+
       windowManager.createWindow({
-          title: `Search: ${query}`,
-          content: `<iframe src="https://unduck.link?q=${encodeURIComponent(query)}" width="100%" height="100%" style="border:none;"></iframe>`,
+          title: `${query}`,
+          content: wtcontent,
           x: 200,
           y: 150,
           width: 800,
           height: 600
       });
+  }
+  else {
+        windowManager.createWindow({
+          title: `Search: ${query}`,
+          content: `<iframe src="${query}" width="100%" height="100%" style="border:none;"></iframe>`,
+          x: 200,
+          y: 150,
+          width: 800,
+          height: 600
+      });
+  
   }
 });
 

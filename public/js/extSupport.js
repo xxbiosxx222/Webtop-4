@@ -1,2 +1,2 @@
-import { WindowManager } from 'https://kylekart.github.io/webtop/js/windowManager.js';
+import { WindowManager } from './windowManager';
 window.windowManager = new WindowManager();

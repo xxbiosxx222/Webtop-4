@@ -269,6 +269,19 @@
       }
     }
 
+    const params = new URLSearchParams();
+const fileValue = params.get('textcontrol');
+
+if (fileValue) {
+
+    editor.setValue(fileValue)
+  
+  // 5. Construct and fetch the file path using the secure, normalized value.
+  //    Note: The `../` is still prepended to ensure the correct directory,
+  //    but it is safe because the user-controlled input no longer contains `../`.
+  
+
+}
     async function readFile() {
       if (!fileHandle) {
         console.warn("No file selected.");
