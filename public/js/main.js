@@ -82,7 +82,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const desktopEl = document.getElementById("desktop");
   const downloadEl = document.getElementById("download-progress");
   const loader = new ContentLoader("webtop-cache-v1", progressEl, logEl, setupEl, lockEl, desktopEl,downloadEl);
-  //loader.loadAssets("/assets.json");
+  loader.loadAssets("/assets.json");
   
 });
 
